@@ -1,0 +1,78 @@
+# MCP runs on the SAME EC2 instance as the API (caresynx-api). There is no separate
+# "MCP instance" in AWS. Public https://mcp.caresynx.com still needs DNS + Nginx + TLS on that host (see README).
+
+name: Deploy MCP server to EC2
+
+on:
+  workflow_dispatch:
+
+env:
+  EC2_HOST: 44.210.107.247
+  EC2_USER: ubuntu
+  MCP_REMOTE_DIR: /opt/caresynx/mcp
+
+jobs:
+  deploy-mcp:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+          cache-dependency-path: Scheduler.MCP/package-lock.json
+
+      - name: Install MCP production dependencies
+        run: npm ci --omit=dev
+        working-directory: Scheduler.MCP
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/key.pem
+          chmod 600 ~/.ssh/key.pem
+          ssh-keyscan -H ${{ env.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Stop MCP and prepare directory
+        run: |
+          ssh -i ~/.ssh/key.pem ${{ env.EC2_USER }}@${{ env.EC2_HOST }} \
+            "sudo systemctl stop caresynx-mcp || true; sudo mkdir -p ${{ env.MCP_REMOTE_DIR }} && sudo chown -R ubuntu:ubuntu ${{ env.MCP_REMOTE_DIR }}"
+
+      - name: Deploy MCP server to EC2
+        run: |
+          rsync -avz --delete --no-times --no-perms \
+            --exclude='.env' \
+            --exclude='.git/' \
+            --exclude='bin/' \
+            --exclude='obj/' \
+            --exclude='*.csproj' \
+            -e "ssh -i ~/.ssh/key.pem" \
+            ./Scheduler.MCP/ ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:${{ env.MCP_REMOTE_DIR }}/
+
+      - name: Install systemd unit and restart MCP on EC2
+        run: |
+          ssh -i ~/.ssh/key.pem ${{ env.EC2_USER }}@${{ env.EC2_HOST }} \
+            "set -e && \
+             sudo chown -R www-data:www-data ${{ env.MCP_REMOTE_DIR }} && \
+             sudo cp ${{ env.MCP_REMOTE_DIR }}/deploy/caresynx-mcp.service /etc/systemd/system/caresynx-mcp.service && \
+             sudo systemctl daemon-reload && \
+             sudo systemctl enable caresynx-mcp && \
+             sudo systemctl restart caresynx-mcp"
+
+      - name: Verify MCP bridge on EC2 (localhost)
+        run: |
+          sleep 3
+          MCP_STATUS=$(ssh -i ~/.ssh/key.pem ${{ env.EC2_USER }}@${{ env.EC2_HOST }} \
+            "curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://127.0.0.1:8787/health || echo 000")
+          echo "MCP /health (127.0.0.1:8787): $MCP_STATUS"
+          if [ "$MCP_STATUS" != "200" ]; then
+            echo "::error::MCP bridge did not return HTTP 200. On the server run: sudo journalctl -u caresynx-mcp -n 50 --no-pager"
+            echo "Ensure Node exists at /usr/bin/node (e.g. sudo apt install nodejs). Create /opt/caresynx/mcp/.env if required."
+            exit 1
+          fi
+          echo "MCP bridge is running on the EC2 instance."
+          echo "Note: https://mcp.caresynx.com/health requires DNS + Nginx + certbot on that same host (see README)."

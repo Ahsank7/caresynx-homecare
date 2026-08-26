@@ -1,0 +1,104 @@
+# DEPRECATED — Frontend now deploys to the VPS via deploy-ui.yml.
+# This workflow is disabled (no automatic runs). Keep only for emergency S3 rollback.
+# Prefer: .github/workflows/deploy-ui.yml
+
+name: "[DEPRECATED] Build & Deploy to S3 + CloudFront"
+
+on:
+  workflow_dispatch:
+
+env:
+  APP_DIR: Scheduler.Client/eXtream-scheduler
+  NODE_VERSION: 18
+  S3_BUCKET_NAME: caresynx-ui
+  AWS_REGION: us-east-2
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: ${{ env.APP_DIR }}
+
+      - name: Build React app
+        run: npm run build
+        working-directory: ${{ env.APP_DIR }}
+        env:
+          CI: false
+          REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
+          # Public base URL for the MCP HTTP bridge (Scheduler.MCP httpBridge). Set in repo Variables.
+          REACT_APP_MCP_BRIDGE_URL: ${{ vars.REACT_APP_MCP_BRIDGE_URL }}
+
+      - name: Verify build output
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          echo "=== Build folder contents ==="
+          find build -type f | head -40
+          echo "=== Total files ==="
+          find build -type f | wc -l
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Sync build to S3
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          aws s3 sync build/ "s3://${{ env.S3_BUCKET_NAME }}/" \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "index.html" \
+            --exclude "asset-manifest.json" \
+            --exclude "manifest.json" \
+            --exclude "robots.txt" \
+            --exclude "favicon.ico"
+
+      # HTML & manifest files get short cache so updates propagate quickly
+      - name: Upload HTML & meta files with short cache
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          BUCKET="${{ env.S3_BUCKET_NAME }}"
+          aws s3 cp build/index.html "s3://${BUCKET}/index.html" \
+            --content-type "text/html" \
+            --cache-control "no-cache, no-store, must-revalidate"
+          for f in asset-manifest.json manifest.json; do
+            if [ -f "build/$f" ]; then
+              aws s3 cp "build/$f" "s3://${BUCKET}/$f" \
+                --content-type "application/json" \
+                --cache-control "no-cache, no-store, must-revalidate"
+            fi
+          done
+          if [ -f "build/robots.txt" ]; then
+            aws s3 cp build/robots.txt "s3://${BUCKET}/robots.txt" \
+              --content-type "text/plain" \
+              --cache-control "public, max-age=86400"
+          fi
+
+      - name: Invalidate CloudFront cache
+        env:
+          CF_DIST_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+        if: env.CF_DIST_ID != ''
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$CF_DIST_ID" \
+            --paths "/*"
+          echo "CloudFront invalidation created successfully"

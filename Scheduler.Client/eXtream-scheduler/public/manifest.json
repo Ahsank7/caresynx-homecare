@@ -1,0 +1,13 @@
+{
+  "short_name": "caresynX",
+  "name": "caresynX",
+  "icons": [
+    { "src": "simpleLogo.PNG", "sizes": "any", "type": "image/png" },
+    { "src": "simpleLogo.PNG", "type": "image/png", "sizes": "192x192" },
+    { "src": "simpleLogo.PNG", "type": "image/png", "sizes": "512x512" }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#7c3aed",
+  "background_color": "#ffffff"
+}

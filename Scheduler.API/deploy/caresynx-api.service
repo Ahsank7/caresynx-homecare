@@ -1,0 +1,20 @@
+[Unit]
+Description=CaresynX Scheduler API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/caresynx/publish
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
+EnvironmentFile=-/opt/caresynx/publish/.env
+ExecStart=/usr/bin/dotnet /opt/caresynx/publish/Scheduler.API.dll
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+SyslogIdentifier=caresynx-api
+
+[Install]
+WantedBy=multi-user.target

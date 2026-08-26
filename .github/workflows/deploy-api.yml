@@ -1,0 +1,251 @@
+name: Deploy Backend API to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: caresynx-api-vps-production
+  cancel-in-progress: true
+
+env:
+  DOTNET_VERSION: 8.0.x
+  API_PROJECT: Scheduler.API/Scheduler.API.csproj
+  PUBLISH_DIR: ./publish
+  VPS_HOST: ${{ vars.VPS_HOST }}
+  VPS_USER: ${{ vars.VPS_USER }}
+  VPS_PORT: ${{ vars.VPS_PORT }}
+  VPS_API_DIR: ${{ vars.VPS_API_DIR }}
+  VPS_API_SERVICE: ${{ vars.VPS_API_SERVICE }}
+  VPS_DEPLOY_GROUP: ${{ vars.VPS_DEPLOY_GROUP }}
+  VPS_SERVICE_USER: ${{ vars.VPS_SERVICE_USER }}
+  VPS_SERVICE_GROUP: ${{ vars.VPS_SERVICE_GROUP }}
+  VPS_HEALTHCHECK_URL: ${{ vars.VPS_HEALTHCHECK_URL }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure deployment defaults
+        env:
+          VPS_HOST_SECRET: ${{ secrets.VPS_HOST }}
+        run: |
+          if [ -z "$VPS_HOST" ] && [ -n "$VPS_HOST_SECRET" ]; then
+            echo "VPS_HOST=$VPS_HOST_SECRET" >> "$GITHUB_ENV"
+            VPS_HOST="$VPS_HOST_SECRET"
+          fi
+
+          if [ -z "$VPS_HOST" ]; then
+            echo "::error::Set VPS_HOST as a repository variable or secret."
+            exit 1
+          fi
+
+          {
+            echo "VPS_USER=${VPS_USER:-root}"
+            echo "VPS_PORT=${VPS_PORT:-22}"
+            echo "VPS_API_DIR=${VPS_API_DIR:-/opt/caresynx/publish}"
+            echo "VPS_API_SERVICE=${VPS_API_SERVICE:-caresynx-api}"
+            echo "VPS_DEPLOY_GROUP=${VPS_DEPLOY_GROUP:-${VPS_USER:-ubuntu}}"
+            echo "VPS_SERVICE_USER=${VPS_SERVICE_USER:-www-data}"
+            echo "VPS_SERVICE_GROUP=${VPS_SERVICE_GROUP:-www-data}"
+          } >> "$GITHUB_ENV"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore API dependencies
+        run: dotnet restore ${{ env.API_PROJECT }}
+
+      - name: Publish API
+        run: dotnet publish ${{ env.API_PROJECT }} -c Release -o ${{ env.PUBLISH_DIR }} --no-restore
+
+      - name: Setup SSH key
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_SSH_KEY_B64: ${{ secrets.VPS_SSH_KEY_B64 }}
+        run: |
+          if [ -z "$VPS_SSH_KEY" ] && [ -z "$VPS_SSH_KEY_B64" ]; then
+            echo "::error::Set VPS_SSH_KEY or VPS_SSH_KEY_B64 as a repository secret."
+            exit 1
+          fi
+
+          install -m 700 -d ~/.ssh
+
+          if [ -n "$VPS_SSH_KEY_B64" ]; then
+            printf '%s' "$VPS_SSH_KEY_B64" | base64 -d > ~/.ssh/vps_key
+          else
+            printf '%s\n' "$VPS_SSH_KEY" | sed 's/\\n/\n/g' | tr -d '\r' > ~/.ssh/vps_key
+          fi
+
+          chmod 600 ~/.ssh/vps_key
+
+          if ! ssh-keygen -y -f ~/.ssh/vps_key > /dev/null 2>&1; then
+            echo "::error::The SSH private key secret could not be parsed. Use an unencrypted OpenSSH private key, or store a base64-encoded private key in VPS_SSH_KEY_B64."
+            exit 1
+          fi
+
+          ssh-keyscan -p "$VPS_PORT" -H "$VPS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Stop API and prepare remote directory
+        run: |
+          ssh -p "$VPS_PORT" -i ~/.ssh/vps_key "$VPS_USER@$VPS_HOST" \
+            "set -e;
+             sudo mkdir -p '$VPS_API_DIR';
+             sudo chown -R '$VPS_USER:$VPS_DEPLOY_GROUP' '$VPS_API_DIR';
+             sudo systemctl stop '$VPS_API_SERVICE' || true"
+
+      - name: Configure remote runtime environment
+        env:
+          VPS_CONNECTION_STRING: ${{ secrets.VPS_CONNECTION_STRING }}
+          VPS_EMAIL_PROVIDER: ${{ secrets.VPS_EMAIL_PROVIDER }}
+          VPS_EMAIL_REGION: ${{ secrets.VPS_EMAIL_REGION }}
+          VPS_EMAIL_ACCESS_KEY: ${{ secrets.VPS_EMAIL_ACCESS_KEY }}
+          VPS_EMAIL_SECRET_KEY: ${{ secrets.VPS_EMAIL_SECRET_KEY }}
+          VPS_EMAIL_FROM: ${{ secrets.VPS_EMAIL_FROM }}
+          VPS_EMAIL_FROM_DISPLAY_NAME: ${{ secrets.VPS_EMAIL_FROM_DISPLAY_NAME }}
+          VPS_EMAIL_ADMIN: ${{ secrets.VPS_EMAIL_ADMIN }}
+          VPS_SMTP_HOST: ${{ secrets.VPS_SMTP_HOST }}
+          VPS_SMTP_PORT: ${{ secrets.VPS_SMTP_PORT }}
+          VPS_SMTP_ENABLE_SSL: ${{ secrets.VPS_SMTP_ENABLE_SSL }}
+          VPS_SMTP_USERNAME: ${{ secrets.VPS_SMTP_USERNAME }}
+          VPS_SMTP_PASSWORD: ${{ secrets.VPS_SMTP_PASSWORD }}
+          VPS_SMTP_USE_DEFAULT_CREDENTIALS: ${{ secrets.VPS_SMTP_USE_DEFAULT_CREDENTIALS }}
+          VPS_SMTP_TIMEOUT: ${{ secrets.VPS_SMTP_TIMEOUT }}
+        run: |
+          tmp_env="$(mktemp)"
+          has_env=0
+
+          escape_env_value() {
+            local value="$1"
+            value="${value//\\/\\\\}"
+            value="${value//\"/\\\"}"
+            printf '"%s"' "$value"
+          }
+
+          append_env() {
+            local key="$1"
+            local value="$2"
+
+            if [ -n "$value" ]; then
+              printf '%s=%s\n' "$key" "$(escape_env_value "$value")" >> "$tmp_env"
+              has_env=1
+            fi
+          }
+
+          if [ -z "$VPS_EMAIL_PROVIDER" ] && [ -n "$VPS_SMTP_HOST" ]; then
+            VPS_EMAIL_PROVIDER="Smtp"
+          fi
+
+          append_env "ConnectionStrings__default" "$VPS_CONNECTION_STRING"
+          append_env "AWS__SecretsManager__Enabled" "false"
+          append_env "Email__Provider" "$VPS_EMAIL_PROVIDER"
+          append_env "Email__Region" "$VPS_EMAIL_REGION"
+          append_env "Email__AccessKey" "$VPS_EMAIL_ACCESS_KEY"
+          append_env "Email__SecretKey" "$VPS_EMAIL_SECRET_KEY"
+          append_env "Email__FromEmail" "$VPS_EMAIL_FROM"
+          append_env "Email__FromDisplayName" "$VPS_EMAIL_FROM_DISPLAY_NAME"
+          append_env "Email__AdminEmail" "$VPS_EMAIL_ADMIN"
+          append_env "Email__Smtp__Host" "$VPS_SMTP_HOST"
+          append_env "Email__Smtp__Port" "$VPS_SMTP_PORT"
+          append_env "Email__Smtp__EnableSsl" "$VPS_SMTP_ENABLE_SSL"
+          append_env "Email__Smtp__UserName" "$VPS_SMTP_USERNAME"
+          append_env "Email__Smtp__Password" "$VPS_SMTP_PASSWORD"
+          append_env "Email__Smtp__UseDefaultCredentials" "$VPS_SMTP_USE_DEFAULT_CREDENTIALS"
+          append_env "Email__Smtp__Timeout" "$VPS_SMTP_TIMEOUT"
+
+          if [ "$has_env" -eq 0 ]; then
+            echo "No VPS runtime environment values were set; leaving existing VPS .env unchanged."
+            rm -f "$tmp_env"
+            exit 0
+          fi
+
+          scp -P "$VPS_PORT" -i ~/.ssh/vps_key "$tmp_env" "$VPS_USER@$VPS_HOST:/tmp/caresynx-api.env"
+          rm -f "$tmp_env"
+
+          ssh -p "$VPS_PORT" -i ~/.ssh/vps_key "$VPS_USER@$VPS_HOST" \
+            "set -e;
+             sudo touch '$VPS_API_DIR/.env';
+             sudo cp '$VPS_API_DIR/.env' '$VPS_API_DIR/.env.bak' || true;
+             sudo grep -v -E '^(ConnectionStrings__default|AWS__SecretsManager__Enabled|Email__Provider|Email__Region|Email__AccessKey|Email__SecretKey|Email__FromEmail|Email__FromDisplayName|Email__AdminEmail|Email__Smtp__Host|Email__Smtp__Port|Email__Smtp__EnableSsl|Email__Smtp__UserName|Email__Smtp__Password|Email__Smtp__UseDefaultCredentials|Email__Smtp__Timeout)=' '$VPS_API_DIR/.env' | sudo tee '$VPS_API_DIR/.env.next' > /dev/null;
+             sudo cat /tmp/caresynx-api.env | sudo tee -a '$VPS_API_DIR/.env.next' > /dev/null;
+             sudo mv '$VPS_API_DIR/.env.next' '$VPS_API_DIR/.env';
+             sudo rm -f /tmp/caresynx-api.env;
+             sudo chown '$VPS_SERVICE_USER:$VPS_SERVICE_GROUP' '$VPS_API_DIR/.env';
+             sudo chmod 600 '$VPS_API_DIR/.env'"
+
+      - name: Install API systemd service
+        run: |
+          cat > caresynx-api.service <<EOF
+          [Unit]
+          Description=CaresynX Scheduler API
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=$VPS_SERVICE_USER
+          Group=$VPS_SERVICE_GROUP
+          WorkingDirectory=$VPS_API_DIR
+          Environment=ASPNETCORE_ENVIRONMENT=Production
+          Environment=DOTNET_ENVIRONMENT=Production
+          Environment=ASPNETCORE_URLS=http://127.0.0.1:5000
+          EnvironmentFile=-$VPS_API_DIR/.env
+          ExecStart=/usr/bin/dotnet $VPS_API_DIR/Scheduler.API.dll
+          Restart=on-failure
+          RestartSec=5
+          KillSignal=SIGINT
+          SyslogIdentifier=$VPS_API_SERVICE
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          scp -P "$VPS_PORT" -i ~/.ssh/vps_key caresynx-api.service "$VPS_USER@$VPS_HOST:/tmp/$VPS_API_SERVICE.service"
+
+          ssh -p "$VPS_PORT" -i ~/.ssh/vps_key "$VPS_USER@$VPS_HOST" \
+            "set -e;
+             sudo mv '/tmp/$VPS_API_SERVICE.service' '/etc/systemd/system/$VPS_API_SERVICE.service';
+             sudo systemctl daemon-reload;
+             sudo systemctl enable '$VPS_API_SERVICE'"
+
+      - name: Upload API publish output
+        run: |
+          rsync -az --delete --no-times --no-perms \
+            --exclude='.env' \
+            --exclude='appsettings.Production.json' \
+            --exclude='wwwroot/FileStorage/' \
+            -e "ssh -p $VPS_PORT -i ~/.ssh/vps_key" \
+            "$PUBLISH_DIR/" "$VPS_USER@$VPS_HOST:$VPS_API_DIR/"
+
+      - name: Restart API service
+        run: |
+          ssh -p "$VPS_PORT" -i ~/.ssh/vps_key "$VPS_USER@$VPS_HOST" \
+            "set -e;
+             sudo chown -R '$VPS_SERVICE_USER:$VPS_SERVICE_GROUP' '$VPS_API_DIR';
+             sudo systemctl daemon-reload;
+             sudo systemctl restart '$VPS_API_SERVICE';
+             sudo systemctl --no-pager --full status '$VPS_API_SERVICE'"
+
+      - name: Verify API is responding
+        run: |
+          sleep 5
+          HEALTHCHECK_URL="${VPS_HEALTHCHECK_URL:-https://api.homecare.caresynx.com/swagger/index.html}"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$HEALTHCHECK_URL" || echo 000)
+          echo "API health check ($HEALTHCHECK_URL): $STATUS"
+
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 500 ]; then
+            echo "API is up."
+          else
+            echo "::error::API did not respond successfully. Check: sudo journalctl -u $VPS_API_SERVICE -n 80 --no-pager"
+            exit 1
+          fi

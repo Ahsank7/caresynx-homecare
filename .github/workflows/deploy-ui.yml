@@ -1,0 +1,155 @@
+name: Deploy Home Care UI to VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Scheduler.Client/eXtream-scheduler/**'
+      - '.github/workflows/deploy-ui.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: caresynx-homecare-ui-vps-production
+  cancel-in-progress: true
+
+env:
+  APP_DIR: Scheduler.Client/eXtream-scheduler
+  NODE_VERSION: 18
+  VPS_HOST: ${{ vars.VPS_HOST }}
+  VPS_USER: ${{ vars.VPS_USER }}
+  VPS_PORT: ${{ vars.VPS_PORT }}
+  VPS_UI_DIR: ${{ vars.VPS_UI_DIR }}
+  VPS_DEPLOY_GROUP: ${{ vars.VPS_DEPLOY_GROUP }}
+  VPS_UI_OWNER: ${{ vars.VPS_UI_OWNER }}
+  VPS_UI_GROUP: ${{ vars.VPS_UI_GROUP }}
+  VPS_UI_HEALTHCHECK_URL: ${{ vars.VPS_UI_HEALTHCHECK_URL }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure deployment defaults
+        env:
+          VPS_HOST_SECRET: ${{ secrets.VPS_HOST }}
+        run: |
+          if [ -z "$VPS_HOST" ] && [ -n "$VPS_HOST_SECRET" ]; then
+            echo "VPS_HOST=$VPS_HOST_SECRET" >> "$GITHUB_ENV"
+            VPS_HOST="$VPS_HOST_SECRET"
+          fi
+
+          if [ -z "$VPS_HOST" ]; then
+            echo "::error::Set VPS_HOST as a repository variable or secret."
+            exit 1
+          fi
+
+          {
+            echo "VPS_USER=${VPS_USER:-root}"
+            echo "VPS_PORT=${VPS_PORT:-22}"
+            echo "VPS_UI_DIR=${VPS_UI_DIR:-/var/www/homecare}"
+            echo "VPS_DEPLOY_GROUP=${VPS_DEPLOY_GROUP:-${VPS_USER:-root}}"
+            echo "VPS_UI_OWNER=${VPS_UI_OWNER:-www-data}"
+            echo "VPS_UI_GROUP=${VPS_UI_GROUP:-www-data}"
+          } >> "$GITHUB_ENV"
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: ${{ env.APP_DIR }}
+
+      - name: Build React app
+        working-directory: ${{ env.APP_DIR }}
+        env:
+          CI: false
+          REACT_APP_API_URL_VAR: ${{ vars.REACT_APP_API_URL }}
+          REACT_APP_MCP_BRIDGE_URL: ${{ vars.REACT_APP_MCP_BRIDGE_URL }}
+        run: |
+          export REACT_APP_API_URL="${REACT_APP_API_URL_VAR:-https://api.homecare.caresynx.com/api/}"
+          echo "Building with REACT_APP_API_URL=$REACT_APP_API_URL"
+          npm run build
+
+      - name: Verify build output
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          if [ ! -f build/index.html ]; then
+            echo "::error::build/index.html missing — React build failed."
+            exit 1
+          fi
+          echo "=== Build folder contents ==="
+          find build -type f | head -40
+          echo "=== Total files ==="
+          find build -type f | wc -l
+
+      - name: Setup SSH key
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_SSH_KEY_B64: ${{ secrets.VPS_SSH_KEY_B64 }}
+        run: |
+          if [ -z "$VPS_SSH_KEY" ] && [ -z "$VPS_SSH_KEY_B64" ]; then
+            echo "::error::Set VPS_SSH_KEY or VPS_SSH_KEY_B64 as a repository secret."
+            exit 1
+          fi
+
+          install -m 700 -d ~/.ssh
+
+          if [ -n "$VPS_SSH_KEY_B64" ]; then
+            printf '%s' "$VPS_SSH_KEY_B64" | base64 -d > ~/.ssh/vps_key
+          else
+            printf '%s\n' "$VPS_SSH_KEY" | sed 's/\\n/\n/g' | tr -d '\r' > ~/.ssh/vps_key
+          fi
+
+          chmod 600 ~/.ssh/vps_key
+
+          if ! ssh-keygen -y -f ~/.ssh/vps_key > /dev/null 2>&1; then
+            echo "::error::The SSH private key secret could not be parsed."
+            exit 1
+          fi
+
+          ssh-keyscan -p "$VPS_PORT" -H "$VPS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Prepare remote UI directory
+        run: |
+          ssh -p "$VPS_PORT" -i ~/.ssh/vps_key "$VPS_USER@$VPS_HOST" \
+            "set -e;
+             sudo mkdir -p '$VPS_UI_DIR';
+             sudo chown -R '$VPS_USER:$VPS_DEPLOY_GROUP' '$VPS_UI_DIR'"
+
+      - name: Upload UI build output
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          rsync -az --delete --no-times --no-perms \
+            -e "ssh -p $VPS_PORT -i ~/.ssh/vps_key" \
+            "build/" "$VPS_USER@$VPS_HOST:$VPS_UI_DIR/"
+
+      - name: Fix UI file ownership
+        run: |
+          ssh -p "$VPS_PORT" -i ~/.ssh/vps_key "$VPS_USER@$VPS_HOST" \
+            "set -e;
+             sudo chown -R '$VPS_UI_OWNER:$VPS_UI_GROUP' '$VPS_UI_DIR'"
+
+      - name: Verify UI is responding
+        run: |
+          sleep 2
+          HEALTHCHECK_URL="${VPS_UI_HEALTHCHECK_URL:-https://homecare.caresynx.com/}"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$HEALTHCHECK_URL" || echo 000)
+          echo "UI health check ($HEALTHCHECK_URL): $STATUS"
+
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 500 ]; then
+            echo "Home Care UI is up."
+          else
+            echo "::error::UI did not respond. Confirm DNS, Nginx, and TLS for homecare.caresynx.com."
+            exit 1
+          fi

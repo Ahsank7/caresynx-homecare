@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Scheduler.DB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{fbfc645a-155c-4e78-b13f-973c9d328702}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>eXtremeHMD.DB</RootNamespace>
+    <AssemblyName>eXtremeHMD.DB</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="HMS\" />
+    <Folder Include="HMS\Tables\" />
+    <Folder Include="Security\" />
+    <Folder Include="HMS\Stored Procedures\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="Organization\" />
+    <Folder Include="Organization\Stored Procedures\" />
+    <Folder Include="Franchise\" />
+    <Folder Include="Franchise\Stored Procedures\" />
+    <Folder Include="CLIENT\" />
+    <Folder Include="CLIENT\Stored Procedures\" />
+    <Folder Include="Staff\" />
+    <Folder Include="Staff\Stored Procedures\" />
+    <Folder Include="ServiceProvider\" />
+    <Folder Include="ServiceProvider\Stored Procedures\" />
+    <Folder Include="Contact\" />
+    <Folder Include="Contact\Stored Procedures\" />
+    <Folder Include="dbo\User Defined Types\" />
+    <Folder Include="Lookup\" />
+    <Folder Include="Lookup\Stored Procedures\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="User\" />
+    <Folder Include="User\Stored Procedures\" />
+    <Folder Include="User\Tables\" />
+    <Folder Include="payment\" />
+    <Folder Include="payment\Stored Procedures\" />
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\tbUserFranchise.sql" />
+    <Build Include="dbo\Tables\tblUserStatusHistory.sql" />
+    <Build Include="dbo\Tables\tblUserRole.sql" />
+    <Build Include="dbo\Tables\tblUserNationality.sql" />
+    <Build Include="dbo\Tables\tblUserLogin.sql" />
+    <Build Include="dbo\Tables\tblUserLeave.sql" />
+    <Build Include="dbo\Tables\tblUserLanguages.sql" />
+    <Build Include="dbo\Tables\tblUserExpense.sql" />
+    <Build Include="dbo\Tables\tblUserContact.sql" />
+    <Build Include="dbo\Tables\tblUserAddress.sql" />
+    <Build Include="dbo\Tables\tblUser.sql" />
+    <Build Include="dbo\Tables\tblStaff.sql" />
+    <Build Include="dbo\Tables\tblServicesTask.sql" />
+    <Build Include="dbo\Tables\tblServiceProviderAvailability.sql" />
+    <Build Include="dbo\Tables\tblServiceProvider.sql" />
+    <Build Include="dbo\Tables\tblScheduler.sql" />
+    <Build Include="dbo\Tables\tblOrganization.sql" />
+    <Build Include="dbo\Tables\tblPayer.sql" />
+    <Build Include="dbo\Tables\tblPayerCardInfo.sql" />
+    <Build Include="dbo\Tables\tblClientPayer.sql" />
+    <Build Include="dbo\Tables\tblClientBillingPreference.sql" />
+    <Build Include="dbo\Tables\tblClientPayerServiceFunding.sql" />
+    <Build Include="dbo\Tables\tblOrganizationPayerServiceFunding.sql" />
+    <Build Include="dbo\Tables\tblNextUserStatuses.sql" />
+    <Build Include="dbo\Tables\tblFranchiseSetting.sql" />
+    <Build Include="dbo\Tables\tblFranchise.sql" />
+    <Build Include="dbo\Tables\tblClient.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetToConfirmTasks.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetPlanboardTasks.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetFranchiseDashboardData.sql" />
+    <Build Include="Organization\Stored Procedures\uspGetOrganisationInfoById.sql" />
+    <Build Include="Organization\Stored Procedures\uspGetOrganizationsByUserId.sql" />
+    <Build Include="Franchise\Stored Procedures\uspGetFranchisesByOranizationIdandUserId.sql" />
+    <Build Include="Franchise\Stored Procedures\uspGetFranchisesByOranizationId.sql" />
+    <Build Include="Security\Organization.sql" />
+    <Build Include="Security\Franchise.sql" />
+    <Build Include="CLIENT\Stored Procedures\uspGetAllClients.sql" />
+    <Build Include="CLIENT\Stored Procedures\DeleteClient.sql" />
+    <Build Include="CLIENT\Stored Procedures\GetClientInfo.sql" />
+    <Build Include="Security\CLIENT.sql" />
+    <Build Include="Staff\Stored Procedures\GetStaffInfo.sql" />
+    <Build Include="Staff\Stored Procedures\DeleteStaff.sql" />
+    <Build Include="Staff\Stored Procedures\uspGetAllStaffs.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\DeleteServiceProvider.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\uspGetAllServiceProviders.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\GetServiceProviderInfo.sql" />
+    <Build Include="Security\Staff.sql" />
+    <Build Include="Security\ServiceProvider.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetAllUserAddress.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdateUserAddress.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserAddressInfo.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteUserAddress.sql" />
+    <Build Include="Contact\Stored Procedures\InsertUpdateContact.sql" />
+    <Build Include="Contact\Stored Procedures\uspGetAllContacts.sql" />
+    <Build Include="Contact\Stored Procedures\GetUserContactInfo.sql" />
+    <Build Include="Contact\Stored Procedures\DeleteUserContact.sql" />
+    <Build Include="Security\Contact.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUserLeave.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUserExpense.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdateUserLeave.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdateUserExpense.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserleaveInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserExpenseInfo.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteLeaveInfo.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteExpenseInfo.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateTaskStatus.sql" />
+    <Build Include="dbo\Stored Procedures\AssignServiceProviderToTask.sql" />
+    <Build Include="dbo\Stored Procedures\UnassignServiceProviderFromTask.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateTaskNotes.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateTaskAttendance.sql" />
+    <Build Include="dbo\Stored Procedures\uspMarkOverdueTasksAsDelayed.sql" />
+    <Build Include="dbo\Stored Procedures\SearchAppointment.sql" />
+    <Build Include="dbo\Stored Procedures\CreateScheduleUpdated.sql" />
+    <Build Include="dbo\Stored Procedures\CreateSchedule.sql" />
+    <Build Include="dbo\Stored Procedures\AddTaskAttendance.sql" />
+    <Build Include="dbo\Tables\tblServiceProviderContract.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\InsertUpdateServiceProviderAvailibility.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\GetServiceProviderAvailibility.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\DeleteServiceProviderAvailibility.sql" />
+    <Build Include="Organization\Stored Procedures\InsertUpdateOrganization.sql" />
+    <Build Include="Organization\Stored Procedures\DeleteOrganization.sql" />
+    <Build Include="Franchise\Stored Procedures\InsertUpdateFranchise.sql" />
+    <Build Include="Franchise\Stored Procedures\DeleteFranchise.sql" />
+    <Build Include="dbo\Stored Procedures\GetServiceProviderTasks.sql" />
+    <Build Include="dbo\Stored Procedures\GetClientTasks.sql" />
+    <Build Include="dbo\Tables\tblServiceProviderContract.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\InsertUpdateServiceProviderAvailibility.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\GetServiceProviderAvailibility.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\DeleteServiceProviderAvailibility.sql" />
+    <Build Include="Organization\Stored Procedures\InsertUpdateOrganization.sql" />
+    <Build Include="Organization\Stored Procedures\DeleteOrganization.sql" />
+    <Build Include="Franchise\Stored Procedures\InsertUpdateFranchise.sql" />
+    <Build Include="Franchise\Stored Procedures\DeleteFranchise.sql" />
+    <Build Include="dbo\Stored Procedures\GetServiceProviderTasks.sql" />
+    <Build Include="dbo\Stored Procedures\GetClientTasks.sql" />
+    <Build Include="dbo\Tables\tblServicesType.sql" />
+    <Build Include="dbo\Tables\tblServices.sql" />
+    <Build Include="dbo\Tables\tblLookups.sql" />
+    <Build Include="dbo\Tables\tbldocument.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUserDocuments.sql" />
+    <Build Include="dbo\Stored Procedures\UploadDocument.sql" />
+    <Build Include="dbo\Stored Procedures\GetDocumentInfoByUserId.sql" />
+    <Build Include="dbo\Stored Procedures\GetDocumentInfo.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteDocument.sql" />
+    <Build Include="dbo\Tables\tblLookupItems.sql" />
+    <Build Include="Lookup\Stored Procedures\uspGeLookupItems.sql" />
+    <Build Include="Lookup\Stored Procedures\uspGetLookupItemById.sql" />
+    <Build Include="Lookup\Stored Procedures\DeleteLookupItem.sql" />
+    <Build Include="Lookup\Stored Procedures\InsertUpdateLookup.sql" />
+    <Build Include="Security\Lookup.sql" />
+    <Build Include="Lookup\Stored Procedures\uspGetLookupsList.sql" />
+    <Build Include="dbo\Tables\tblServiceProviderWageDetail.sql" />
+    <Build Include="dbo\Tables\tblServiceProviderWage.sql" />
+    <Build Include="dbo\Tables\tblBillingInvoiceDetail.sql" />
+    <Build Include="dbo\Tables\tblBillingInvoice.sql" />
+    <Build Include="dbo\Functions\SplitString.sql" />
+    <Build Include="dbo\Functions\fn_ResolveClientBillTo.sql" />
+    <Build Include="dbo\Stored Procedures\uspGenerateServiceProviderWage.sql" />
+    <Build Include="dbo\Stored Procedures\uspApplyTaskBillingFunding.sql" />
+    <Build Include="dbo\Stored Procedures\uspGenerateBillingInvoices.sql" />
+    <Build Include="dbo\Stored Procedures\uspCalculateBillingAndWageAmounts.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\uspGetAllAvailableServiceProviders.sql" />
+    <Build Include="dbo\Tables\tblUserAvailability.sql" />
+    <Build Include="dbo\Tables\tblTransaction.sql" />
+    <Build Include="dbo\Tables\tblCardInfo.sql" />
+    <Build Include="dbo\Tables\tblBankAccount.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetWageInfo.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetWageDetail.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetBillingInfo.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetBillingDetail.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetAllUserTransaction.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetAllAvailability.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateUserAuthenticationInfo.sql" />
+    <Build Include="dbo\Stored Procedures\ChangeUserPassword.sql" />
+    <Build Include="dbo\Stored Procedures\InserUpdateUserCardInfo.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdatePayerCardInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetPayerCardInfo.sql" />
+    <Build Include="dbo\Stored Procedures\InserUpdateUserBankAccountInfo.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdateUserTransaction.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdateUserAvailability.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserTransactionInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserCreadentialsInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserCardInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserBankAccountInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserAvailabilityInfo.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteUserAvailability.sql" />
+    <Build Include="User\Stored Procedures\GetLoginUserInfo.sql" />
+    <Build Include="User\Stored Procedures\uspGetAllUsers.sql" />
+    <Build Include="User\Stored Procedures\InsertUpdateUser.sql" />
+    <Build Include="User\Stored Procedures\GetUserInfo.sql" />
+    <Build Include="User\Stored Procedures\DeleteUser.sql" />
+    <Build Include="Security\User.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetServiceTaskInfo.sql" />
+    <Build Include="User\Stored Procedures\UploadProfileImage.sql" />
+    <Build Include="User\Stored Procedures\CheckUserNameExists.sql" />
+    <Build Include="dbo\Stored Procedures\GetServiceTypes.sql" />
+    <Build Include="dbo\Stored Procedures\GetServicesByTypeId.sql" />
+    <Build Include="dbo\Stored Procedures\InserUpdateServiceProviderContractInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetServiceProviderContractInfo.sql" />
+    <Build Include="payment\Stored Procedures\uspUpdatePaymentStatus.sql" />
+    <Build Include="payment\Stored Procedures\uspGetPaymentData.sql" />
+    <Build Include="Security\payment.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateServiceType.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateService.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteServiceType.sql" />
+    <Build Include="dbo\Stored Procedures\DeleteService.sql" />
+    <Build Include="dbo\Stored Procedures\CreateServiceType.sql" />
+    <Build Include="dbo\Stored Procedures\CreateService.sql" />
+    <Build Include="Organization\Stored Procedures\UpdateOrganizationLogoPath.sql" />
+    <Build Include="ServiceProvider\Stored Procedures\uspGetServiceProvidersWithAvailability_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspPreviewServiceProviderWage_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspPreviewBillingInvoices_1.sql" />
+    <Build Include="dbo\Tables\tblTaskLog.sql" />
+    <Build Include="dbo\Tables\tblRole.sql" />
+    <Build Include="dbo\Tables\tblLoginHistory.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateUserBankAccountConnectedAccountId_1.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateLogoutTime.sql" />
+    <Build Include="dbo\Stored Procedures\ManageUserRole.sql" />
+    <Build Include="dbo\Stored Procedures\InsertTaskLog_1.sql" />
+    <Build Include="dbo\Stored Procedures\InsertLoginHistory.sql" />
+    <Build Include="dbo\Stored Procedures\GetTaskLogs_1.sql" />
+    <Build Include="dbo\Stored Procedures\GetLoginHistoryCount.sql" />
+    <Build Include="dbo\Stored Procedures\GetLoginHistory.sql" />
+    <Build Include="dbo\Stored Procedures\GetAvailableRoles.sql" />
+    <Build Include="dbo\Tables\tblRolePermission.sql" />
+    <Build Include="dbo\Tables\tblMenu.sql" />
+    <Build Include="dbo\Stored Procedures\SaveRolePermissions.sql" />
+    <Build Include="dbo\Stored Procedures\PopulateDefaultRoles.sql" />
+    <Build Include="dbo\Stored Procedures\PopulateDefaultMenus.sql" />
+    <Build Include="dbo\Stored Procedures\GetUserMenuPermissions.sql" />
+    <Build Include="dbo\Stored Procedures\GetSessionConflictInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetAllMenus.sql" />
+    <Build Include="dbo\Stored Procedures\ForceLogoutOtherSessions.sql" />
+    <Build Include="dbo\Stored Procedures\CheckActiveUserSessions.sql" />
+    <Build Include="dbo\Tables\tblTimeZoneMapping.sql" />
+    <Build Include="dbo\Functions\GetTimeZoneId.sql" />
+    <Build Include="dbo\Tables\tblOrganizationTimeBasedRates.sql" />
+    <Build Include="dbo\Stored Procedures\uspInsertUpdateOrganizationTimeBasedRate.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetOrganizationTimeBasedRates.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteOrganizationTimeBasedRate.sql" />
+    <Build Include="dbo\Stored Procedures\uspCalculateBillingAndWageAmounts_backup.sql" />
+    <Build Include="Organization\Stored Procedures\uspGetAllOrganizations.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetToConfirmTasksWithExpenses_1.sql" />
+    <Build Include="dbo\Stored Procedures\GetRolePermissions_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUserOrganizations.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUserFranchises.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUserFranchiseAssignments.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateMenuVisibility.sql" />
+    <Build Include="dbo\Stored Procedures\sp_Seed_MasterData.sql" />
+    <Build Include="dbo\Stored Procedures\SaveUpdateMenu.sql" />
+    <Build Include="dbo\Stored Procedures\UpsertUserFranchiseStatus.sql" />
+    <Build Include="dbo\Tables\tblPackageInvoice.sql" />
+    <Build Include="dbo\Tables\tblPackage.sql" />
+    <Build Include="dbo\Tables\tblOrganizationPackage.sql" />
+    <Build Include="dbo\Tables\tblOrganizationCardInfo.sql" />
+    <Build Include="Franchise\Stored Procedures\CreateFranchiseAdminUser_1.sql" />
+    <Build Include="dbo\Stored Procedures\UpdatePackageInvoicePaymentStatus.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateMenuStatus.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdatePackage.sql" />
+    <Build Include="dbo\Stored Procedures\InsertUpdateOrganizationCardInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetOrganizationPackageInvoices.sql" />
+    <Build Include="dbo\Stored Procedures\GetOrganizationPackageHistory.sql" />
+    <Build Include="dbo\Stored Procedures\GetOrganizationCardInfo.sql" />
+    <Build Include="dbo\Stored Procedures\GetCurrentOrganizationPackage.sql" />
+    <Build Include="dbo\Stored Procedures\GetAllPackages.sql" />
+    <Build Include="dbo\Stored Procedures\GetAllMenusForAdmin.sql" />
+    <Build Include="dbo\Stored Procedures\GenerateMonthlyPackageInvoices.sql" />
+    <Build Include="dbo\Stored Procedures\AssignPackageToOrganization.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateOrganizationPackagePricing.sql" />
+    <Build Include="dbo\Stored Procedures\UpdateInvoiceDocumentUrl.sql" />
+    <Build Include="dbo\Stored Procedures\GetAvailableRolesForUser_1.sql" />
+    <Build Include="dbo\Tables\tblNotificationRead_1.sql" />
+    <Build Include="dbo\Tables\tblNotification_1.sql" />
+    <Build Include="payment\Stored Procedures\uspManualMarkPaymentAsPaid.sql" />
+    <Build Include="payment\Stored Procedures\uspGetPaymentStatus.sql" />
+    <Build Include="dbo\Stored Procedures\uspMarkNotificationAsRead_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspMarkAllNotificationsAsRead_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUserNotifications_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetUnreadNotificationCount_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteNotification_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspCreateNotification_1.sql" />
+    <Build Include="dbo\Tables\tblServiceProviderAttributes_1.sql" />
+    <Build Include="dbo\Tables\tblComplaint_1.sql" />
+    <Build Include="dbo\Tables\tblClientPreferences_1.sql" />
+    <Build Include="User\Stored Procedures\uspGetUserByUserNo_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspUpsertServiceProviderAttribute_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspUpsertClientPreference_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspUpdateComplaint_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetServiceProviderAttributes_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetMatchingServiceProviders_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetComplaints_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetComplaintById_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspGetClientPreferences_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteServiceProviderAttribute_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteComplaint_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspDeleteClientPreference_1.sql" />
+    <Build Include="dbo\Stored Procedures\uspCreateComplaint_1.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Script.SchedulerPostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\CreateDelayedTaskStatusJob.sql" />
+    <None Include="Scripts\AddOrgPayersOrgFundingMenus.sql" />
+    <None Include="ServicesTask.sql" />
+    <None Include="SqlSchemaCompare-DB-2-Project.scmp" />
+  </ItemGroup>
+</Project>
