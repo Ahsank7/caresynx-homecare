@@ -77,7 +77,17 @@ jobs:
           REACT_APP_API_URL_VAR: ${{ vars.REACT_APP_API_URL }}
           REACT_APP_MCP_BRIDGE_URL: ${{ vars.REACT_APP_MCP_BRIDGE_URL }}
         run: |
-          export REACT_APP_API_URL="${REACT_APP_API_URL_VAR:-https://api.homecare.caresynx.com/api/}"
+          # Home Care production API. Ignore legacy api.caresynx.com if still set in GitHub Variables.
+          DEFAULT_API_URL="https://api.homecare.caresynx.com/api/"
+          export REACT_APP_API_URL="${REACT_APP_API_URL_VAR:-$DEFAULT_API_URL}"
+
+          case "$REACT_APP_API_URL" in
+            *api.caresynx.com*)
+              echo "::warning::Legacy REACT_APP_API_URL='$REACT_APP_API_URL' detected. Forcing $DEFAULT_API_URL"
+              export REACT_APP_API_URL="$DEFAULT_API_URL"
+              ;;
+          esac
+
           echo "Building with REACT_APP_API_URL=$REACT_APP_API_URL"
           npm run build
 
@@ -88,6 +98,17 @@ jobs:
             echo "::error::build/index.html missing — React build failed."
             exit 1
           fi
+
+          if grep -R --quiet "api\.caresynx\.com" build/static/js/ 2>/dev/null; then
+            echo "::error::Built JS still contains api.caresynx.com — wrong API URL baked in."
+            exit 1
+          fi
+
+          if ! grep -R --quiet "api\.homecare\.caresynx\.com" build/static/js/ 2>/dev/null; then
+            echo "::error::Built JS missing api.homecare.caresynx.com — API URL not baked in."
+            exit 1
+          fi
+
           echo "=== Build folder contents ==="
           find build -type f | head -40
           echo "=== Total files ==="
