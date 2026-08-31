@@ -1,5 +1,44 @@
 import environment from "../../enviroment";
 
+const PUBLIC_FOLDERS = [
+  "ProfileImages",
+  "OrganizationLogos",
+  "UserDocument",
+  "Invoices",
+];
+
+const getApiOrigin = () => {
+  const base = environment.baseURL || "";
+  if (base.startsWith("http://") || base.startsWith("https://")) {
+    try {
+      return new URL(base).origin;
+    } catch {
+      return base.replace(/\/api\/?$/i, "").replace(/\/$/, "");
+    }
+  }
+  return "";
+};
+
+const toPublicWebPath = (filePath) => {
+  if (!filePath) return "";
+
+  const normalized = String(filePath).replace(/\\/g, "/");
+
+  for (const folder of PUBLIC_FOLDERS) {
+    const token = `/${folder}/`;
+    const lower = normalized.toLowerCase();
+    const index = lower.indexOf(token.toLowerCase());
+    if (index >= 0) {
+      return `/${normalized.substring(index + 1)}`;
+    }
+    if (lower.startsWith(`${folder.toLowerCase()}/`)) {
+      return `/${normalized}`;
+    }
+  }
+
+  return normalized.startsWith("/") ? normalized : `/${normalized}`;
+};
+
 /**
  * Builds a complete URL for document access
  * @param {string} documentPath - The document path from the API
@@ -7,19 +46,14 @@ import environment from "../../enviroment";
  */
 export const buildDocumentUrl = (documentPath) => {
   if (!documentPath) return "";
-  
-  // If it's already a complete URL, return as is
+
   if (documentPath.startsWith("http://") || documentPath.startsWith("https://")) {
     return documentPath;
   }
-  
-  // If it's a relative path, prepend the API base URL
-  if (documentPath.startsWith("/")) {
-    return `${environment.API_BASE_URL}${documentPath}`;
-  }
-  
-  // If it's just a filename or path, prepend the API base URL with a slash
-  return `${environment.API_BASE_URL}/${documentPath}`;
+
+  const origin = getApiOrigin();
+  const webPath = toPublicWebPath(documentPath);
+  return `${origin}${webPath}`;
 };
 
 /**
@@ -66,14 +100,13 @@ export const isCompleteUrl = (url) => {
  */
 export const getFilenameFromUrl = (url) => {
   if (!url) return "";
-  
+
   try {
     const urlObj = new URL(url);
     const pathname = urlObj.pathname;
-    return pathname.split('/').pop() || "";
+    return pathname.split("/").pop() || "";
   } catch {
-    // If it's not a valid URL, treat it as a path
-    return url.split('/').pop() || "";
+    return url.split("/").pop() || "";
   }
 };
 
@@ -84,7 +117,7 @@ export const getFilenameFromUrl = (url) => {
  */
 export const getFileExtension = (url) => {
   const filename = getFilenameFromUrl(url);
-  const lastDotIndex = filename.lastIndexOf('.');
+  const lastDotIndex = filename.lastIndexOf(".");
   return lastDotIndex > 0 ? filename.substring(lastDotIndex + 1).toLowerCase() : "";
 };
 
@@ -94,7 +127,7 @@ export const getFileExtension = (url) => {
  * @returns {boolean} - True if the file is an image
  */
 export const isImageFile = (url) => {
-  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+  const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg"];
   const extension = getFileExtension(url);
   return imageExtensions.includes(extension);
 };

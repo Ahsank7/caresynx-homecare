@@ -40,10 +40,6 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapControllers();
-
-app.UseAppSwaggerUI();
-
 app.UseStaticFiles(); // For wwwroot by default
 
 // Add static file serving for different file types
@@ -95,6 +91,10 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(Path.Combine(fileStoragePath, "Invoices")),
     RequestPath = "/Invoices"
 });
+
+app.MapControllers();
+
+app.UseAppSwaggerUI();
 
 app.Run();
 

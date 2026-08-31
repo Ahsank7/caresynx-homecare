@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace Scheduler.API.Common
@@ -13,11 +14,21 @@ namespace Scheduler.API.Common
 
     public class UrlService : IUrlService
     {
-        private readonly IConfiguration _configuration;
+        private static readonly string[] PublicFolders =
+        {
+            "ProfileImages",
+            "OrganizationLogos",
+            "UserDocument",
+            "Invoices"
+        };
 
-        public UrlService(IConfiguration configuration)
+        private readonly IConfiguration _configuration;
+        private readonly string _absoluteBaseDirectory;
+
+        public UrlService(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
+            _absoluteBaseDirectory = ResolveAbsoluteBaseDirectory(configuration, environment);
         }
 
         public string BuildWebPath(string filePath)
@@ -25,14 +36,13 @@ namespace Scheduler.API.Common
             if (string.IsNullOrEmpty(filePath))
                 return filePath;
 
-            // If it's already a complete URL, return as is
             if (IsCompleteUrl(filePath))
                 return filePath;
 
             var storageType = GetStorageType();
             var baseUrl = GetStorageBaseUrl();
 
-            switch (storageType?.ToLower())
+            switch (storageType?.ToLowerInvariant())
             {
                 case "s3":
                 case "aws":
@@ -64,54 +74,96 @@ namespace Scheduler.API.Common
 
         public string GetStorageBaseUrl()
         {
-            return _configuration["Storage:BaseUrl"] ?? 
-                   _configuration["FileStorage:BaseUrl"] ?? 
-                   ""; // Empty for direct static file serving
+            return _configuration["Storage:BaseUrl"] ??
+                   _configuration["FileStorage:BaseUrl"] ??
+                   "";
         }
 
         public string GetStorageType()
         {
-            return _configuration["Storage:Type"] ?? 
-                   _configuration["FileStorage:Type"] ?? 
+            return _configuration["Storage:Type"] ??
+                   _configuration["FileStorage:Type"] ??
                    "local";
         }
 
         private string BuildLocalUrl(string filePath, string baseUrl)
         {
-            // Handle local file storage
-            var localBaseDir = _configuration["Storage:LocalBaseDir"] ?? 
-                              _configuration["FileStorage:LocalBaseDir"] ?? 
-                              @"C:\FileStorage";
+            var webPath = ToPublicWebPath(filePath);
+            if (string.IsNullOrEmpty(baseUrl))
+                return webPath;
 
-            if (filePath.StartsWith(localBaseDir, StringComparison.OrdinalIgnoreCase))
+            return baseUrl.TrimEnd('/') + webPath;
+        }
+
+        private string ToPublicWebPath(string filePath)
+        {
+            var normalized = filePath.Replace('\\', '/');
+
+            foreach (var folder in PublicFolders)
             {
-                var relative = filePath.Substring(localBaseDir.Length).Replace("\\", "/");
-                
-                // If baseUrl is empty, use direct static file serving
-                if (string.IsNullOrEmpty(baseUrl))
+                var token = "/" + folder + "/";
+                var index = normalized.IndexOf(token, StringComparison.OrdinalIgnoreCase);
+                if (index < 0 && normalized.StartsWith(folder + "/", StringComparison.OrdinalIgnoreCase))
+                    index = 0;
+
+                if (index >= 0)
                 {
-                    return relative.StartsWith("/") ? relative : "/" + relative;
-                }
-                else
-                {
-                    return baseUrl + (relative.StartsWith("/") ? relative : "/" + relative);
+                    var relative = normalized.Substring(index).TrimStart('/');
+                    return "/" + relative;
                 }
             }
 
-            // Check if the path already starts with the base URL to avoid duplication
-            if (!string.IsNullOrEmpty(baseUrl) && filePath.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
+            try
             {
-                return filePath; // Already has the base URL, return as is
+                var fullFile = Path.GetFullPath(filePath);
+                var fullBase = _absoluteBaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                               + Path.DirectorySeparatorChar;
+
+                if (fullFile.StartsWith(fullBase, StringComparison.OrdinalIgnoreCase))
+                {
+                    var relative = fullFile.Substring(fullBase.Length).Replace('\\', '/');
+                    return "/" + relative.TrimStart('/');
+                }
+            }
+            catch (Exception)
+            {
+                // Not a filesystem path — fall through.
             }
 
-            // If it doesn't start with the base dir, assume it's already relative
-            return baseUrl + (filePath.StartsWith("/") ? filePath : "/" + filePath);
+            var markers = new[] { "/wwwroot/FileStorage/", "/FileStorage/", "wwwroot/FileStorage/" };
+            foreach (var marker in markers)
+            {
+                var index = normalized.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+                if (index >= 0)
+                {
+                    var relative = normalized.Substring(index + marker.Length).TrimStart('/');
+                    return "/" + relative;
+                }
+            }
+
+            return normalized.StartsWith('/') ? normalized : "/" + normalized;
+        }
+
+        private static string ResolveAbsoluteBaseDirectory(IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            var basePath = configuration["Storage:LocalBaseDir"] ??
+                           configuration["FileStorage:LocalBaseDir"] ??
+                           "wwwroot/FileStorage";
+
+            if (basePath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                var uri = new Uri(basePath);
+                basePath = uri.AbsolutePath.TrimStart('/');
+            }
+
+            if (!Path.IsPathRooted(basePath))
+                basePath = Path.Combine(environment.ContentRootPath, basePath);
+
+            return Path.GetFullPath(basePath);
         }
 
         private string BuildS3Url(string filePath, string baseUrl)
         {
-            // For S3, the filePath should be the S3 key
-            // baseUrl should be the S3 bucket URL or CDN URL
             if (string.IsNullOrEmpty(baseUrl))
             {
                 var bucketName = _configuration["Storage:S3:BucketName"];
@@ -124,7 +176,6 @@ namespace Scheduler.API.Common
 
         private string BuildAzureUrl(string filePath, string baseUrl)
         {
-            // For Azure Blob Storage
             if (string.IsNullOrEmpty(baseUrl))
             {
                 var accountName = _configuration["Storage:Azure:AccountName"];
@@ -137,7 +188,6 @@ namespace Scheduler.API.Common
 
         private string BuildGcpUrl(string filePath, string baseUrl)
         {
-            // For Google Cloud Storage
             if (string.IsNullOrEmpty(baseUrl))
             {
                 var bucketName = _configuration["Storage:GCP:BucketName"];
@@ -147,4 +197,4 @@ namespace Scheduler.API.Common
             return baseUrl.TrimEnd('/') + "/" + filePath.TrimStart('/');
         }
     }
-} 
+}
