@@ -49,7 +49,7 @@ namespace Scheduler.API.Services.Package
             }
         }
 
-        private async Task<string> UploadToAzureAsync(byte[] pdfBytes, int organizationId, string fileName)
+        private async Task<string> UploadToAzureAsync(byte[] pdfBytes, Guid organizationId, string fileName)
         {
             var blobName = $"{organizationId}/{fileName}";
             var blobServiceClient = new BlobServiceClient(_connectionString);
@@ -74,7 +74,7 @@ namespace Scheduler.API.Services.Package
             return url;
         }
 
-        private async Task<string> SaveLocallyAsync(byte[] pdfBytes, int organizationId, string fileName)
+        private async Task<string> SaveLocallyAsync(byte[] pdfBytes, Guid organizationId, string fileName)
         {
             var basePath = _configuration["Storage:LocalBaseDir"] ?? "wwwroot/FileStorage";
             if (basePath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
