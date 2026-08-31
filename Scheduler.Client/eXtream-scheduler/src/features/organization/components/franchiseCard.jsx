@@ -2,14 +2,16 @@ import { Avatar, Group, Paper, Text, createStyles } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   franchiseCard: {
-    transition: "transform 150ms ease",
+    transition: "transform 160ms ease, box-shadow 160ms ease",
     height: "12.5rem",
     cursor: "pointer",
-    //border: "1px solid #dee2e645",
+    borderColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[2],
 
-    "&:hover,:focus,:active": {
-      // boxShadow: theme.shadows.sm,
-      transform: "scale(1.05)",
+    "&:hover": {
+      transform: "translateY(-3px)",
+      boxShadow: theme.shadows.md,
+      borderColor: theme.colors.brand[3],
     },
   },
 }));
@@ -17,6 +19,13 @@ const useStyles = createStyles((theme) => ({
 const FranchiseCard = ({ franchise, onFranchise }) => {
   const { name, description } = franchise;
   const { classes } = useStyles();
+  const initials = (name || "?")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
 
   return (
     <Paper
@@ -27,11 +36,11 @@ const FranchiseCard = ({ franchise, onFranchise }) => {
       className={classes.franchiseCard}
       onClick={() => onFranchise(franchise)}
     >
-      <Group mb="md">
-        <Avatar size="lg" color="cyan">
-          MK
+      <Group mb="md" noWrap>
+        <Avatar size="lg" radius="md" color="brand">
+          {initials || "?"}
         </Avatar>
-        <Text size="lg" weight="500" color="dimmed">
+        <Text size="lg" weight={600} lineClamp={1}>
           {name}
         </Text>
       </Group>

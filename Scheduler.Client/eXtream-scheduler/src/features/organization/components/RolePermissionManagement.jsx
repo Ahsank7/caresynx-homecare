@@ -316,7 +316,7 @@ const RolePermissionManagement = ({ organizationId }) => {
           </Title>
         </Group>
 
-        <Alert color="blue" title="Access Control Setup">
+        <Alert color="brand" title="Access Control Setup">
           Configure role-based access control for staff users. You can only manage permissions for roles below your own
           level in the hierarchy. Select a role and set permissions for each menu item.
         </Alert>

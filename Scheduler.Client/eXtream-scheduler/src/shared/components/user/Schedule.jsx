@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Select, Container, Group, Tooltip, Paper, Text } from "@mantine/core";
+import { Button, Select, Container, Group, Paper, Text } from "@mantine/core";
+import { StatusLegend } from "shared/components/StatusLegend";
 import { Scheduler } from "react-scheduler-pro";
 import AddUpdateUserSchedule from "shared/components/user/AddUpdateUserSchedule";
 import { lookupService, scheduleService } from "core/services";
@@ -69,13 +70,13 @@ export function Schedule({ userId, organizationId, userType, readOnly = false })
               resourceId: task.scheduleId,
               backgroundColor:
                 task.taskStatus === "Scheduled"
-                  ? "#5933f0c9"
+                  ? "#8b5cf6"
                   : task.taskStatus === "Delayed"
                     ? "#fa5252"
                     : task.taskStatus === "In-Progress"
                       ? "#40c057"
                       : task.taskStatus === "Completed"
-                        ? "#228be6"
+                        ? "#6366f1"
                         : task.taskStatus === "Cancelled"
                           ? "#fab005"
                           : task.taskStatus === "Unassigned"
@@ -216,75 +217,7 @@ export function Schedule({ userId, organizationId, userType, readOnly = false })
           }}
         />
       </Group>
-      <Group
-        position="apart"
-        style={{
-          width: "100%",
-          marginTop: "20px",
-          justifyContent: "center",
-        }}
-      >
-        <Tooltip label="Scheduled">
-          <div style={{ 
-            backgroundColor: "#5933f0c9", 
-            color: "white", 
-            padding: "8px 16px", 
-            borderRadius: "4px", 
-            cursor: "default",
-            userSelect: "none"
-          }}>Scheduled</div>
-        </Tooltip>
-        <Tooltip label="In-Progress">
-          <div style={{ 
-            backgroundColor: "#40c057", 
-            color: "white", 
-            padding: "8px 16px", 
-            borderRadius: "4px", 
-            cursor: "default",
-            userSelect: "none"
-          }}>In-Progress</div>
-        </Tooltip>
-        <Tooltip label="Cancelled">
-          <div style={{ 
-            backgroundColor: "#fab005", 
-            color: "white", 
-            padding: "8px 16px", 
-            borderRadius: "4px", 
-            cursor: "default",
-            userSelect: "none"
-          }}>Cancelled</div>
-        </Tooltip>
-        <Tooltip label="Completed">
-          <div style={{ 
-            backgroundColor: "#228be6", 
-            color: "white", 
-            padding: "8px 16px", 
-            borderRadius: "4px", 
-            cursor: "default",
-            userSelect: "none"
-          }}>Completed</div>
-        </Tooltip>
-        <Tooltip label="Delay">
-          <div style={{ 
-            backgroundColor: "#fa5252", 
-            color: "white", 
-            padding: "8px 16px", 
-            borderRadius: "4px", 
-            cursor: "default",
-            userSelect: "none"
-          }}>Delay</div>
-        </Tooltip>
-        <Tooltip label="Unassigned">
-          <div style={{ 
-            backgroundColor: "#B8956A", 
-            color: "white", 
-            padding: "8px 16px", 
-            borderRadius: "4px", 
-            cursor: "default",
-            userSelect: "none"
-          }}>Unassigned</div>
-        </Tooltip>
-      </Group>
+      <StatusLegend mt="md" position="center" />
     </Container>
   );
 }

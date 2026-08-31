@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { servicesService } from "core/services";
+import { servicesService, handleApiError, showSuccessNotification } from "core/services";
 import { Loader, Center, Text, Table, Button, Modal, TextInput, Textarea, Group, NumberInput } from "@mantine/core";
+import { AppConfirmationModal } from "shared/components";
 
 const emptyServiceType = { id: 0, name: "", description: "" };
 const emptyService = { id: 0, name: "", description: "", rate: 0 };
@@ -24,6 +25,8 @@ const Services = ({ organizationId }) => {
     const [serviceForm, setServiceForm] = useState(emptyService);
     const [serviceTypeIdForService, setServiceTypeIdForService] = useState(null);
     const [isEditService, setIsEditService] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
         fetchServiceTypes();
@@ -170,6 +173,47 @@ const Services = ({ organizationId }) => {
         }
     };
 
+    const requestDeleteServiceType = (type) => {
+        setDeleteTarget({ kind: "type", id: type.id, name: type.name });
+    };
+
+    const requestDeleteService = (service, serviceTypeId) => {
+        setDeleteTarget({
+            kind: "service",
+            id: service.id,
+            name: service.name,
+            serviceTypeId,
+        });
+    };
+
+    const handleDeleteConfirm = async (confirmed) => {
+        if (!confirmed || !deleteTarget) {
+            setDeleteTarget(null);
+            return;
+        }
+
+        setDeleteLoading(true);
+        try {
+            if (deleteTarget.kind === "type") {
+                await servicesService.deleteServiceType(deleteTarget.id);
+                showSuccessNotification("Service type deleted.");
+                setExpandedRows((rows) => rows.filter((id) => id !== deleteTarget.id));
+                await fetchServiceTypes();
+            } else {
+                await servicesService.deleteService(deleteTarget.id);
+                showSuccessNotification("Service deleted.");
+                if (deleteTarget.serviceTypeId) {
+                    await fetchServicesByType(deleteTarget.serviceTypeId);
+                }
+            }
+            setDeleteTarget(null);
+        } catch (err) {
+            handleApiError(err, "Cannot delete");
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <Center style={{ minHeight: 200 }}>
@@ -197,7 +241,7 @@ const Services = ({ organizationId }) => {
                         <th style={{ width: 80 }}>ID</th>
                         <th>Name</th>
                         <th>Description</th>
-                        <th style={{ width: 80 }}>Actions</th>
+                        <th style={{ width: 160 }}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -220,9 +264,14 @@ const Services = ({ organizationId }) => {
                                 <td>{type.name}</td>
                                 <td>{type.description}</td>
                                 <td>
-                                    <Button size="xs" variant="outline" onClick={() => openEditServiceTypeModal(type)}>
-                                        Edit
-                                    </Button>
+                                    <Group spacing="xs" noWrap>
+                                        <Button size="xs" variant="outline" onClick={() => openEditServiceTypeModal(type)}>
+                                            Edit
+                                        </Button>
+                                        <Button size="xs" variant="outline" color="red" onClick={() => requestDeleteServiceType(type)}>
+                                            Delete
+                                        </Button>
+                                    </Group>
                                 </td>
                             </tr>
                             {expandedRows.includes(type.id) && (
@@ -247,7 +296,7 @@ const Services = ({ organizationId }) => {
                                                         <th>Service Name</th>
                                                         <th>Description</th>
                                                         <th style={{ width: 100 }}>Rate</th>
-                                                        <th style={{ width: 80 }}>Actions</th>
+                                                        <th style={{ width: 160 }}>Actions</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -258,9 +307,14 @@ const Services = ({ organizationId }) => {
                                                             <td>{service.description}</td>
                                                             <td>${service.rate || 0}</td>
                                                             <td>
-                                                                <Button size="xs" variant="outline" onClick={() => openEditServiceModal(service, type.id)}>
-                                                                    Edit
-                                                                </Button>
+                                                                <Group spacing="xs" noWrap>
+                                                                    <Button size="xs" variant="outline" onClick={() => openEditServiceModal(service, type.id)}>
+                                                                        Edit
+                                                                    </Button>
+                                                                    <Button size="xs" variant="outline" color="red" onClick={() => requestDeleteService(service, type.id)}>
+                                                                        Delete
+                                                                    </Button>
+                                                                </Group>
                                                             </td>
                                                         </tr>
                                                     ))}
@@ -348,6 +402,19 @@ const Services = ({ organizationId }) => {
                     </Button>
                 </Group>
             </Modal>
+
+            <AppConfirmationModal
+                opened={!!deleteTarget}
+                onClose={handleDeleteConfirm}
+                title={deleteTarget?.kind === "type" ? "Delete service type" : "Delete service"}
+                isLoading={deleteLoading}
+            >
+                <Text>
+                    {deleteTarget?.kind === "type"
+                        ? `Delete service type "${deleteTarget?.name}"? This also removes unused services under it. Entries already used on a schedule or task cannot be deleted.`
+                        : `Delete service "${deleteTarget?.name}"? If it is already used on a schedule or task, it cannot be deleted.`}
+                </Text>
+            </AppConfirmationModal>
         </>
     );
 };

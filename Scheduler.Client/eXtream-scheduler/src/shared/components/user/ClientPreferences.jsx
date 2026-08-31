@@ -193,7 +193,7 @@ export function ClientPreferences({ clientId, readOnly = false }) {
         </Group>
 
         {!readOnly && (
-          <Alert icon={<IconAlertCircle size={16} />} color="blue" variant="light">
+          <Alert icon={<IconAlertCircle size={16} />} color="brand" variant="light">
             <Text size="sm">
               Add preferences to help match you with suitable service providers. Mark preferences
               as "Required" if they are mandatory, or leave unmarked for optional preferences.

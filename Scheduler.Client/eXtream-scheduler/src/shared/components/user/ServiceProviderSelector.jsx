@@ -415,7 +415,7 @@ const ServiceProviderSelector = ({
 
         {/* Info Message */}
         {!startDateTime || !endDateTime ? (
-          <Alert icon={<IconInfoCircle size={16} />} title="Info" color="blue">
+          <Alert icon={<IconInfoCircle size={16} />} title="Info" color="brand">
             Please select start and end date/time in the appointment form first.
           </Alert>
         ) : null}
@@ -508,7 +508,7 @@ const ServiceProviderSelector = ({
                           </Text>
                           <Popover width={320} position="left" withArrow shadow="md">
                             <Popover.Target>
-                              <ActionIcon size="sm" variant="subtle" color="blue">
+                              <ActionIcon size="sm" variant="subtle" color="brand">
                                 <IconInfoCircleFilled size={16} />
                               </ActionIcon>
                             </Popover.Target>

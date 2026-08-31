@@ -6,7 +6,10 @@ const useStyles = createStyles((theme) => ({
 
     "> tr": {
       "&:hover": {
-        boxShadow: theme.shadows.md,
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[5]
+            : theme.colors.gray[0],
         cursor: "pointer",
       },
       td: {

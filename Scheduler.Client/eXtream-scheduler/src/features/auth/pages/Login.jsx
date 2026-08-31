@@ -22,17 +22,15 @@ const useStyles = createStyles((theme) => ({
     minHeight: "100vh",
     display: "flex",
     alignItems: "stretch",
-    backgroundImage: "url(/LoginPage-HC.png?w=1280&q=80)",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right center",
-    backgroundSize: "contain",
+    overflow: "hidden",
     backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.colors.gray[0],
   },
 
   formColumn: {
     width: "100%",
     maxWidth: 440,
-    minWidth: 320,
+    minWidth: 0,
+    flex: "0 0 440px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -43,14 +41,29 @@ const useStyles = createStyles((theme) => ({
     background:
       theme.colorScheme === "dark"
         ? `linear-gradient(180deg, ${theme.colors.dark[6]} 0%, ${theme.colors.dark[7]} 22%, ${theme.colors.dark[7]} 78%, ${theme.colors.dark[6]} 100%)`
-        : "linear-gradient(180deg, #eef4ff 0%, #f8fafc 18%, #ffffff 50%, #f8fafc 82%, #e0f2fe 100%)",
+        : "linear-gradient(180deg, #eef2ff 0%, #f8fafc 18%, #ffffff 50%, #f8fafc 82%, #f5f3ff 100%)",
     boxShadow: theme.colorScheme === "dark" ? "none" : "4px 0 24px rgba(0,0,0,0.06)",
     position: "relative",
     overflow: "hidden",
+    zIndex: 1,
     [theme.fn.smallerThan("md")]: {
+      flex: "1 1 auto",
       maxWidth: "100%",
       boxShadow: "none",
       borderRight: "none",
+    },
+  },
+
+  heroColumn: {
+    flex: "1 1 0",
+    minWidth: 0,
+    backgroundImage: "url(/LoginPage-HC.png?w=1280&q=80)",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center center",
+    backgroundSize: "cover",
+    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : "#eef2ff",
+    [theme.fn.smallerThan("md")]: {
+      display: "none",
     },
   },
 
@@ -62,8 +75,8 @@ const useStyles = createStyles((theme) => ({
     height: "28%",
     background:
       theme.colorScheme === "dark"
-        ? `linear-gradient(180deg, ${theme.colors.blue[9]}20 0%, transparent 100%)`
-        : "linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%)",
+        ? `linear-gradient(180deg, ${theme.colors.brand[9]}28 0%, transparent 100%)`
+        : "linear-gradient(180deg, rgba(99, 102, 241, 0.10) 0%, transparent 100%)",
     pointerEvents: "none",
   },
 
@@ -75,8 +88,8 @@ const useStyles = createStyles((theme) => ({
     height: "28%",
     background:
       theme.colorScheme === "dark"
-        ? `linear-gradient(0deg, ${theme.colors.cyan[9]}18 0%, transparent 100%)`
-        : "linear-gradient(0deg, rgba(6, 182, 212, 0.06) 0%, transparent 100%)",
+        ? `linear-gradient(0deg, ${theme.colors.violet[9]}22 0%, transparent 100%)`
+        : "linear-gradient(0deg, rgba(139, 92, 246, 0.08) 0%, transparent 100%)",
     pointerEvents: "none",
   },
 
@@ -125,7 +138,7 @@ const useStyles = createStyles((theme) => ({
     transition: "transform 0.15s ease, box-shadow 0.15s ease",
     "&:hover": {
       transform: "translateY(-1px)",
-      boxShadow: "0 6px 20px rgba(37, 99, 235, 0.4)",
+      boxShadow: "0 6px 20px rgba(99, 102, 241, 0.35)",
     },
   },
 }));
@@ -268,7 +281,7 @@ const Login = () => {
     }
   };
 
-  const logoUrl = process.env.PUBLIC_URL + "/simpleLogo.PNG";
+  const logoUrl = process.env.PUBLIC_URL + "/caresyncHC-Logo.PNG";
 
   return (
     <div className={classes.wrapper}>
@@ -277,7 +290,7 @@ const Login = () => {
         <Box className={classes.formColumnDecorBottom} aria-hidden />
         <Box component="form" onSubmit={form.onSubmit((values) => handleSubmit(values))} className={classes.formInner} style={{ position: "relative", zIndex: 1 }}>
           <div className={classes.logoWrap}>
-            <img src={logoUrl} alt="caresynX" className={classes.logo} />
+            <img src={logoUrl} alt="caresynX HomeCare" className={classes.logo} />
           </div>
           <Title order={1} className={classes.title} align="center" size="h2">
             Welcome back to caresynX
@@ -325,7 +338,7 @@ const Login = () => {
             mt="xl"
             size="md"
             variant="gradient"
-            gradient={{ from: "blue", to: "cyan" }}
+            gradient={{ from: "brand", to: "violet" }}
             className={classes.loginButton}
             loading={isLoading}
             loaderPosition="right"
@@ -334,6 +347,7 @@ const Login = () => {
           </Button>
         </Box>
       </Paper>
+      <div className={classes.heroColumn} aria-hidden />
     </div>
   );
 };

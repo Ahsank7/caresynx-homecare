@@ -265,7 +265,7 @@ const BasicSetting = ({ organization }) => {
                           leftIcon={<IconEye size={20} />}
                           style={{ margin: 0, width: 40, height: 40, minWidth: 40, display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
                           variant="white"
-                          color="blue"
+                          color="brand"
                           onClick={() => setViewModalOpen(true)}
                         />
                       </Tooltip>

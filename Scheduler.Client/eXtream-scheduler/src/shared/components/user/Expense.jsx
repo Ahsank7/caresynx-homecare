@@ -61,7 +61,7 @@ export function Expense({ userId, organizationId }) {
               <tr key={index}>
                 <td>{helperFunctions.getRowNumber(100, 1, index)}</td>
                 <td>
-                  <Badge color="blue" variant="light">
+                  <Badge color="brand" variant="light">
                     {row.type}
                   </Badge>
                 </td>

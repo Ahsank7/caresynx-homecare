@@ -209,7 +209,7 @@ export const AddUpdateUserDocument = ({ id, userId, onModalClose }) => {
       )}
 
       {id && (
-        <Alert icon={<IconAlertCircle size={16} />} color="blue" mb="md">
+        <Alert icon={<IconAlertCircle size={16} />} color="brand" mb="md">
           <Text size="sm">
             File upload is not available in edit mode. The existing file will be retained.
           </Text>

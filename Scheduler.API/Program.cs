@@ -64,14 +64,12 @@ if (!Path.IsPathRooted(fileStoragePath))
 }
 
 // Create directories if they don't exist
-var directories = new[] { "ProfileImages", "OrganizationLogos", "UserDocument" };
+Directory.CreateDirectory(fileStoragePath);
+var directories = new[] { "ProfileImages", "OrganizationLogos", "UserDocument", "Invoices" };
 foreach (var dir in directories)
 {
     var fullPath = Path.Combine(fileStoragePath, dir);
-    if (!Directory.Exists(fullPath))
-    {
-        Directory.CreateDirectory(fullPath);
-    }
+    Directory.CreateDirectory(fullPath);
 }
 
 app.UseStaticFiles(new StaticFileOptions
@@ -90,6 +88,12 @@ app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(fileStoragePath, "UserDocument")),
     RequestPath = "/UserDocument"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(fileStoragePath, "Invoices")),
+    RequestPath = "/Invoices"
 });
 
 app.Run();

@@ -6,3 +6,10 @@ obj/
 *.user
 *.suo
 .vs/
+*.dbmdl
+*.jfm
+
+# Uploaded files stay on the server; keep folder placeholders in git
+Scheduler.API/wwwroot/FileStorage/**
+!Scheduler.API/wwwroot/FileStorage/**/
+!Scheduler.API/wwwroot/FileStorage/**/.gitkeep

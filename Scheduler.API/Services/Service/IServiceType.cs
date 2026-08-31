@@ -7,6 +7,6 @@ namespace Scheduler.API.Services.Service
         Task<GetServiceTypeResponse> GetServiceTypesAsync(Guid OrganizationId);
         Task<ServiceTypeInfo> CreateServiceTypeAsync(ServiceTypeInfo model);
         Task<ServiceTypeInfo> UpdateServiceTypeAsync(ServiceTypeInfo model);
-        Task<bool> DeleteServiceTypeAsync(int id);
+        Task<DeleteEntityResult> DeleteServiceTypeAsync(int id);
     }
 }

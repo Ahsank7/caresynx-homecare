@@ -6,7 +6,7 @@ import { Paper, Stack, Title, Text, Group } from "@mantine/core";
  */
 export function ProfileTabPanel({ title, description, headerActions, children }) {
   return (
-    <Paper p="md" withBorder>
+    <Paper p="md" radius="md" withBorder>
       <Stack spacing="md">
         {(title || description || headerActions) && (
           <Group position="apart" align="flex-start" noWrap>

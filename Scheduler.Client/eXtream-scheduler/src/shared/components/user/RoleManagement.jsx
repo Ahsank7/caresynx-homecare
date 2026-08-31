@@ -271,7 +271,7 @@ export function RoleManagement({ userId, userType, readOnly = false }) {
       <div style={{ position: "relative" }}>
         <LoadingOverlay visible={isLoading} />
 
-        <Alert color="blue" mb="md">
+        <Alert color="brand" mb="md">
           Role assignment is mandatory for staff users. This determines the user&apos;s permissions and access levels within the system.
         </Alert>
 

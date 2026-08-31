@@ -168,7 +168,7 @@ export function ServiceProviderAttributes({ serviceProviderId, readOnly = false 
         </Group>
 
         {!readOnly && (
-          <Alert icon={<IconAlertCircle size={16} />} color="blue" variant="light">
+          <Alert icon={<IconAlertCircle size={16} />} color="brand" variant="light">
             <Text size="sm">
               Add your attributes to help clients find you. These will be used to match you with
               clients looking for service providers with specific characteristics.

@@ -123,7 +123,7 @@ export function Leave({ userId, organizationId, userType, readOnly = false }) {
               <td>{formatDateTime(row.endTime)}</td>
               <td>{row.type}</td>
               <td>
-                <Badge color="blue" variant="light">
+                <Badge color="brand" variant="light">
                   {row.status}
                 </Badge>
               </td>

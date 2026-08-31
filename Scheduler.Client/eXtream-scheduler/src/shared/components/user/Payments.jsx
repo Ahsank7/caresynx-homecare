@@ -64,7 +64,7 @@ export function Payments({ userId, type, readOnly = false }) {
       title: type === "billing" ? "Invoice ID" : "Payroll ID",
       textAlignment: "left",
       render: (record) => (
-        <Text size="sm" weight={600} color="blue">
+        <Text size="sm" weight={600} color="brand">
           #{record.id}
         </Text>
       ),
@@ -155,7 +155,7 @@ export function Payments({ userId, type, readOnly = false }) {
               size="xs"
               leftIcon={<IconEye size={14} />}
               onClick={() => handleViewDetails(record)}
-              color="blue"
+              color="brand"
             >
               View
             </Button>
@@ -474,7 +474,7 @@ export function Payments({ userId, type, readOnly = false }) {
             <Group spacing="xs">
               <Button
                 variant="filled"
-                color="blue"
+                color="brand"
                 size="sm"
                 onClick={open}
                 style={{ minWidth: 100, color: "#fff", borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
@@ -625,7 +625,7 @@ export function Payments({ userId, type, readOnly = false }) {
                   <Text size="sm" weight={500}>
                     {type === "billing" ? "Invoice ID:" : "Payroll ID:"}
                   </Text>
-                  <Text size="sm" color="blue" weight={600}>
+                  <Text size="sm" color="brand" weight={600}>
                     #{selectedPaymentForManual.id}
                   </Text>
                 </Group>

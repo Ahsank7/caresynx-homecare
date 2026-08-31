@@ -1,9 +1,13 @@
-import { Box, Card, createStyles, Pagination } from "@mantine/core";
+import { Box, createStyles, Pagination } from "@mantine/core";
 
-const useStyles = createStyles(() => ({
+const useStyles = createStyles((theme) => ({
   pagination: {
     display: "flex",
     justifyContent: "flex-end",
+    padding: `${theme.spacing.sm} ${theme.spacing.md}`,
+    borderTop: `1px solid ${
+      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[2]
+    }`,
   },
 }));
 
@@ -18,18 +22,16 @@ export const AppTablePagination = ({
   const totalPages = Math.ceil(totalRecords / pageSize);
 
   return (
-    <Card>
-      <Box className={classes.pagination}>
-        <Pagination
-          page={currentPage}
-          total={totalPages}
-          onChange={onPagination}
-          radius="xl"
-          size="xl"
-          withEdges
-          siblings={0}
-        />
-      </Box>
-    </Card>
+    <Box className={classes.pagination}>
+      <Pagination
+        page={currentPage}
+        total={totalPages}
+        onChange={onPagination}
+        radius="md"
+        size="sm"
+        withEdges
+        siblings={0}
+      />
+    </Box>
   );
 };

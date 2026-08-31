@@ -326,7 +326,7 @@ export function UserComplaints({ userId, userType, readOnly = false }) {
         size="lg"
       >
         <Stack spacing="md">
-          <Alert icon={<IconAlertCircle size={16} />} color="blue" variant="light">
+          <Alert icon={<IconAlertCircle size={16} />} color="brand" variant="light">
             <Text size="sm">
               Please provide detailed information about your complaint. This will
               be reviewed by the appropriate authorities.

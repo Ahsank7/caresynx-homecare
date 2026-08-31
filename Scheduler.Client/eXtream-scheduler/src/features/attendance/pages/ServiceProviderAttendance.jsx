@@ -332,14 +332,14 @@ const ServiceProviderAttendance = () => {
       
       {/* Header */}
       <div className={classes.header}>
-        <Title order={1} color="blue" mb="sm">
+        <Title order={1} color="brand" mb="sm">
           Service Provider Attendance Portal
         </Title>
         <Text size="lg" color="dimmed" mb="md">
           {formatDate(today)}
         </Text>
         <Group position="center" spacing="md">
-          <Badge size="lg" color="blue" variant="light">
+          <Badge size="lg" color="brand" variant="light">
             <IconCalendar size={16} style={{ marginRight: 8 }} />
             Today's Tasks
           </Badge>
@@ -398,7 +398,7 @@ const ServiceProviderAttendance = () => {
                   {/* Client Information */}
                   <Divider />
                   <div className={classes.infoRow}>
-                    <IconUser size={16} color={theme.colors.blue[6]} />
+                    <IconUser size={16} color={theme.colors.brand[6]} />
                     <Text size="sm" weight={500}>
                       {task.clientName || 'N/A'}
                     </Text>
@@ -448,7 +448,7 @@ const ServiceProviderAttendance = () => {
 
                   {task.checkOutTime && (
                     <div className={classes.infoRow}>
-                      <IconLogout size={16} color={theme.colors.blue[6]} />
+                      <IconLogout size={16} color={theme.colors.brand[6]} />
                       <Text size="sm" weight={500}>
                         Checked Out: {formatTime(task.checkOutTime)}
                       </Text>
@@ -489,7 +489,7 @@ const ServiceProviderAttendance = () => {
               <Alert
                 icon={<IconInfoCircle size={16} />}
                 title="Task Information"
-                color="blue"
+                color="brand"
                 variant="light"
               >
                 <Text size="sm">
@@ -560,7 +560,7 @@ const ServiceProviderAttendance = () => {
         className={classes.refreshButton}
         size="xl"
         radius="xl"
-        color="blue"
+        color="brand"
         variant="filled"
         onClick={fetchTodaysTasks}
         loading={isLoading}

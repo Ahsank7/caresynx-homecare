@@ -56,9 +56,9 @@ namespace Scheduler.API.Controllers
             if (id <= 0)
                 return BadRequest(Response<bool>.BadRequest("Valid service ID is required"));
             var result = await _service.DeleteServiceAsync(id);
-            if (!result)
-                return NotFound(Response<bool>.NotFound("Service not found or could not be deleted"));
-            return Ok(Response<bool>.Success(result,"Service deleted successfully!"));
+            if (result == null || !result.Deleted)
+                return Conflict(Response<bool>.Error(result?.Message ?? "Service not found or could not be deleted", StatusCodes.Status409Conflict));
+            return Ok(Response<bool>.Success(true, result.Message));
         }
 
         // --- ServiceType CRUD ---
@@ -93,9 +93,9 @@ namespace Scheduler.API.Controllers
             if (id <= 0)
                 return BadRequest(Response<bool>.BadRequest("Valid service type ID is required"));
             var result = await _serviceType.DeleteServiceTypeAsync(id);
-            if (!result)
-                return NotFound(Response<bool>.NotFound("Service type not found or could not be deleted"));
-            return Ok(Response<bool>.Success(result,"Service type deleted successfully!"));
+            if (result == null || !result.Deleted)
+                return Conflict(Response<bool>.Error(result?.Message ?? "Service type not found or could not be deleted", StatusCodes.Status409Conflict));
+            return Ok(Response<bool>.Success(true, result.Message));
         }
     }
 }

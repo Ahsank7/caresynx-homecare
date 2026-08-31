@@ -195,12 +195,12 @@ const NotificationManagement = () => {
         <Stack spacing="lg">
           <Group position="apart">
             <Title order={3}>Send Notification</Title>
-            <Badge size="lg" variant="outline" color="blue">
+            <Badge size="lg" variant="outline" color="brand">
               Push Notification System
             </Badge>
           </Group>
 
-          <Alert icon={<IconInfoCircle size={16} />} color="blue">
+          <Alert icon={<IconInfoCircle size={16} />} color="brand">
             Send notifications to users based on organization, franchise, or role. Leave filters empty to send to all users.
           </Alert>
 
@@ -335,7 +335,7 @@ const NotificationManagement = () => {
             <Grid.Col md={6} xs={12}>
               <Card withBorder p="md">
                 <Group spacing="xs" mb="xs">
-                  <IconInfoCircle size={20} color="blue" />
+                  <IconInfoCircle size={20} color="brand" />
                   <Text weight={500}>Notification Types</Text>
                 </Group>
                 <Text size="sm" color="dimmed">

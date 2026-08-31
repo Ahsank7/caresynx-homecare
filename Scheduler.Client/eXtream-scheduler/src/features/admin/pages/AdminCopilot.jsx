@@ -341,7 +341,7 @@ const AdminCopilot = () => {
         <Stack spacing="md">
           <Alert
             icon={<IconRobot size={16} />}
-            color="blue"
+            color="brand"
             variant="light"
             title="Admin workflow assistant"
           >

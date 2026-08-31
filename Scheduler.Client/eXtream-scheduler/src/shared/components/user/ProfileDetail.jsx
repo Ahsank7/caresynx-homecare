@@ -8,6 +8,8 @@ import {
   Button,
   Tooltip,
   Modal,
+  Badge,
+  Alert,
 } from "@mantine/core";
 import { AppContainer } from "shared/components";
 import { ProfileInformation } from "shared/components/user/ProfileInformation";
@@ -42,27 +44,29 @@ import enviroment from "../../../enviroment";
 
 const useStyles = createStyles((theme) => ({
   tab: {
-    padding: "1rem 1rem",
+    padding: "0.75rem 1.1rem",
+    fontWeight: 500,
   },
   panel: {
     height: "100%",
-    paddingTop: "1rem",
+    paddingTop: theme.spacing.md,
     overflow: "auto",
   },
   label: {
-    color: "green",
+    color: theme.colors.teal[6],
     "&:focus": {
-      borderColor: "#ced4da !important",
+      borderColor: `${theme.colors.gray[4]} !important`,
     },
   },
   profileCard: {
     backgroundColor:
       theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
     marginBottom: theme.spacing.md,
-    height: "100%",
     overflowY: "auto",
-    paddingBottom: `${theme.spacing.xs} !important`,
-    paddingTop: `${theme.spacing.xs} !important`,
+    paddingBottom: `${theme.spacing.md} !important`,
+    paddingTop: `${theme.spacing.md} !important`,
+    borderColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[2],
   },
   avatar: {
     width: 120,
@@ -495,24 +499,13 @@ export const ProfileDetail = () => {
   return (
     <AppContainer height="100" title="">
       {readOnly && (
-        <Card 
-          shadow="sm" 
-          p="md" 
-          radius="md" 
+        <Alert
+          color="yellow"
           mb="md"
-          style={{ 
-            backgroundColor: '#fff3cd', 
-            borderColor: '#ffeaa7',
-            border: '2px solid #ffeaa7'
-          }}
+          title="Read-only profile"
         >
-          <Text size="lg" weight={600} style={{ color: '#856404' }}>
-            📖 Read-Only Profile
-          </Text>
-          <Text size="sm" style={{ color: '#856404', marginTop: '0.5rem' }}>
-            You are viewing your own profile in read-only mode. You can navigate between tabs and view information, but cannot create, update, or delete any data.
-          </Text>
-        </Card>
+          You are viewing this profile in read-only mode. You can browse tabs but cannot create, update, or delete data.
+        </Alert>
       )}
       <Card className={classes.profileCard} shadow="sm" p="lg" radius="md" withBorder>
         <Group position="apart" align="center" noWrap>
@@ -524,9 +517,9 @@ export const ProfileDetail = () => {
                 weight={700}
               >{`${profileData.firstName} ${profileData.lastName} ( ${profileData.userNo} )`}</Text>
               {readOnly && (
-                <Text size="sm" color="orange" weight={500} style={{ marginTop: '0.25rem' }}>
-                  🔒 Read-Only Mode
-                </Text>
+                <Badge color="yellow" variant="light" mt={4}>
+                  Read-only
+                </Badge>
               )}
               <Text size="sm" color="dimmed">
                 {`Email : ${profileData.email}`}
@@ -539,9 +532,14 @@ export const ProfileDetail = () => {
               </Text>
               <Text size="sm" color="dimmed">
                 {`Current Status : `}
-                <span style={{ color: profileData.status === 'InActive' ? 'red' : 'green' }}>
-                  {profileData.status === 'InActive' ? 'In-Active' : 'Active'}
-                </span>
+                <Badge
+                  className="app-status-badge"
+                  color={profileData.status === "InActive" ? "red" : "teal"}
+                  variant="light"
+                  ml={4}
+                >
+                  {profileData.status === "InActive" ? "Inactive" : "Active"}
+                </Badge>
               </Text>
             </div>
           )}
@@ -593,7 +591,7 @@ export const ProfileDetail = () => {
                         leftIcon={<IconEye size={20} />}
                         className={classes.avatarButton}
                         variant="white"
-                        color="blue"
+                        color="brand"
                         onClick={() => setViewModalOpen(true)}
                       />
                     </Tooltip>
@@ -620,8 +618,8 @@ export const ProfileDetail = () => {
         defaultValue="Profile"
         value={activeTab}
         onTabChange={setActiveTab}
-        variant="outline"
-        mb="2rem"
+        variant="default"
+        mb="md"
       >
         <Tabs.List>
           {tabs?.map((tab, index) => (

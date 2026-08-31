@@ -27,19 +27,20 @@ const ORGANIZATION_SETTINGS_TABS = [
     { label: "Login History", menuId: "login-history" },
 ];
 
-const useStyles = createStyles(() => ({
+const useStyles = createStyles((theme) => ({
     tab: {
-        padding: "1rem 1rem"
+        padding: "0.75rem 1.1rem",
+        fontWeight: 500,
     },
     panel: {
         height: "100%",
-        paddingTop: "1.25rem",
+        paddingTop: theme.spacing.md,
         overflow: "auto"
     },
     label: {
-        color: "green",
+        color: theme.colors.teal[6],
         "&:focus": {
-            borderColor: "#ced4da !important"
+            borderColor: `${theme.colors.gray[4]} !important`
         }
     }
 }));
@@ -139,7 +140,7 @@ const OrganizationDetail = () => {
             <Tabs
                 value={activeTab}
                 onTabChange={setActiveTab}
-                variant="outline"
+                variant="default"
             >
                 <Tabs.List>
                     {visibleTabs.map((tab) => (

@@ -214,7 +214,7 @@ const PackageHistory = ({ organizationId }) => {
       <td>
         {item.isActive ? (
           <ActionIcon
-            color="blue"
+            color="brand"
             variant="light"
             onClick={() => handleEditClick(item)}
             title="Edit Pricing"

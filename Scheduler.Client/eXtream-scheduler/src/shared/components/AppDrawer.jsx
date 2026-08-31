@@ -10,6 +10,7 @@ import {
   ThemeIcon,
 } from "@mantine/core";
 import { IconFilter } from "@tabler/icons-react";
+import { HEADER_HEIGHT } from "theme";
 
 /**
  * Groups filter fields with a subtle card and section label.
@@ -63,6 +64,7 @@ export const AppDrawer = ({
       onClose={close}
       padding="lg"
       shadow="xl"
+      zIndex={400}
       overlayProps={{ opacity: 0.5, blur: 5 }}
       transitionProps={{
         duration: 220,
@@ -84,11 +86,21 @@ export const AppDrawer = ({
           display: "flex",
           flexDirection: "column",
           height: "100%",
+          borderRadius: 0,
+        },
+        inner: {
+          top: HEADER_HEIGHT,
+          bottom: 0,
+          height: "auto",
+          padding: 0,
+        },
+        overlay: {
+          top: HEADER_HEIGHT,
         },
       }}
       title={
         <Group spacing="sm" noWrap align="flex-start">
-          <ThemeIcon size="lg" radius="md" variant="light" color="blue">
+          <ThemeIcon size="lg" radius="md" variant="light" color="brand">
             <IconFilter size={18} stroke={1.75} />
           </ThemeIcon>
           <Box>

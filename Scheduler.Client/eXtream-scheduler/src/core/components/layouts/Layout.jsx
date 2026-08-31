@@ -1,37 +1,34 @@
-import { Card, createStyles, Box } from "@mantine/core";
+import { createStyles, Box } from "@mantine/core";
 import { AppHeader, Sidebar } from "core/components";
 import { useSidebar } from "../../context/SidebarContext";
+import { HEADER_HEIGHT } from "theme";
 
 const useStyles = createStyles((theme) => ({
-  layoutHeight: {
-    height: "92vh",
-  },
-
-  layoutContainer: {
-    padding: theme.spacing.md,
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
-  },
-
-  bodyContainer: {
-    border: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]}`,
-    height: "100%",
-    borderRadius: "0.4rem",
-    overflowY: "auto",
+  shell: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100vh",
+    overflow: "hidden",
+    "--cs-header-height": `${HEADER_HEIGHT}px`,
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[8] : "#f8fafc",
   },
 
   bodyRow: {
     display: "flex",
-    width: "100%",
+    flex: 1,
     minHeight: 0,
+    width: "100%",
   },
 
   sidebarWrap: {
     flexShrink: 0,
-    width: 60,
+    width: 64,
+    transition: "width 0.2s ease",
   },
 
   sidebarWrapExpanded: {
-    width: "16.666667%",
+    width: 240,
     minWidth: 200,
     maxWidth: 280,
   },
@@ -39,6 +36,26 @@ const useStyles = createStyles((theme) => ({
   contentWrap: {
     flex: "1 1 0",
     minWidth: 0,
+    display: "flex",
+    flexDirection: "column",
+    minHeight: 0,
+  },
+
+  pageCanvas: {
+    flex: 1,
+    minHeight: 0,
+    paddingTop: 8,
+    paddingLeft: theme.spacing.md,
+    paddingRight: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
+    overflow: "auto",
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[8] : "#f8fafc",
+  },
+
+  pageInner: {
+    minHeight: "100%",
+    height: "100%",
   },
 }));
 
@@ -53,10 +70,8 @@ export const Layout = ({
   const { isCollapsed } = useSidebar();
 
   return (
-    <Box m={0} p={0}>
-      <Box m={0} p={0}>
-        <AppHeader franchiseName={franchiseName} />
-      </Box>
+    <Box className={classes.shell}>
+      <AppHeader franchiseName={franchiseName} />
 
       <Box className={classes.bodyRow}>
         <Box
@@ -70,11 +85,11 @@ export const Layout = ({
         </Box>
 
         <Box className={classes.contentWrap}>
-          <section className={cx(classes.layoutHeight, classes.layoutContainer)}>
-            <Card p="0" m="0" shadow="sm" className={classes.bodyContainer}>
+          <Box className={cx(classes.pageCanvas, "app-page-canvas")}>
+            <Box className={cx(classes.pageInner, "app-page-content")}>
               {children}
-            </Card>
-          </section>
+            </Box>
+          </Box>
         </Box>
       </Box>
     </Box>

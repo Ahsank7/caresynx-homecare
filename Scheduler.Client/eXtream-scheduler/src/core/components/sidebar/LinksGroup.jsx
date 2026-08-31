@@ -11,75 +11,67 @@ import {
 } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons";
 
-const useStyles = createStyles((theme) => ({
-  control: {
-    fontWeight: 500,
-    display: "block",
-    width: "100%",
-    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
-    color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-    fontSize: theme.fontSizes.sm,
+const useStyles = createStyles((theme) => {
+  const brand = theme.colors.brand;
+  const isDark = theme.colorScheme === "dark";
 
-    "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[7]
-          : theme.colors.gray[0],
-      color: theme.colorScheme === "dark" ? theme.white : theme.black,
+  return {
+    control: {
+      fontWeight: 500,
+      display: "block",
+      width: "100%",
+      padding: `8px 10px`,
+      marginBottom: 2,
+      borderRadius: theme.radius.md,
+      color: isDark ? theme.colors.dark[0] : theme.colors.gray[7],
+      fontSize: theme.fontSizes.sm,
+      transition: "background-color 0.15s ease, color 0.15s ease",
+
+      "&:hover": {
+        backgroundColor: isDark ? theme.colors.dark[6] : theme.colors.gray[0],
+        color: isDark ? theme.white : theme.black,
+      },
     },
-  },
 
-  link: {
-    fontWeight: 500,
-    display: "block",
-    textDecoration: "none",
-    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
-    paddingLeft: 31,
-    marginLeft: 30,
-    fontSize: theme.fontSizes.sm,
-    cursor: "pointer",
-    color:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[0]
-        : theme.colors.gray[7],
-    borderLeft: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
+    link: {
+      fontWeight: 500,
+      display: "block",
+      textDecoration: "none",
+      padding: `8px 10px 8px 14px`,
+      marginLeft: 28,
+      marginBottom: 2,
+      borderRadius: theme.radius.sm,
+      fontSize: theme.fontSizes.sm,
+      cursor: "pointer",
+      color: isDark ? theme.colors.dark[0] : theme.colors.gray[6],
+      borderLeft: `2px solid ${isDark ? theme.colors.dark[4] : theme.colors.gray[2]}`,
 
-    "&:hover": {
-      backgroundColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[7]
-          : theme.colors.gray[0],
-      color: theme.colorScheme === "dark" ? theme.white : theme.black,
+      "&:hover": {
+        backgroundColor: isDark ? theme.colors.dark[6] : theme.colors.gray[0],
+        color: isDark ? theme.white : theme.black,
+      },
     },
-  },
 
-  chevron: {
-    transition: "transform 200ms ease",
-  },
+    chevron: {
+      transition: "transform 200ms ease",
+      color: isDark ? theme.colors.dark[2] : theme.colors.gray[5],
+    },
 
-  // Selected/active state – clearly visible in both light and dark mode
-  active: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[5]
-        : theme.colors.blue[0],
-    color: theme.colorScheme === "dark" ? theme.white : theme.colors.blue[8],
-    borderLeft: `3px solid ${
-      theme.colorScheme === "dark" ? theme.colors.blue[6] : theme.colors.blue[5]
-    }`,
-  },
-  activeCollapsed: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[5]
-        : theme.colors.blue[0],
-    borderLeft: `3px solid ${
-      theme.colorScheme === "dark" ? theme.colors.blue[6] : theme.colors.blue[5]
-    }`,
-  },
-}));
+    active: {
+      backgroundColor: isDark ? `${brand[9]}55` : brand[0],
+      color: isDark ? brand[3] : brand[7],
+      fontWeight: 600,
+      "&:hover": {
+        backgroundColor: isDark ? `${brand[9]}70` : brand[1],
+        color: isDark ? brand[2] : brand[8],
+      },
+    },
+
+    activeCollapsed: {
+      backgroundColor: isDark ? `${brand[9]}55` : brand[0],
+    },
+  };
+});
 
 export const LinksGroup = ({ menu, selectedMenu, onSidebarMenu, isCollapsed = false }) => {
   const { icon: Icon, label, initiallyOpened = false, childrenLinks } = menu;
@@ -100,16 +92,21 @@ export const LinksGroup = ({ menu, selectedMenu, onSidebarMenu, isCollapsed = fa
         isActive && isCollapsed && classes.activeCollapsed
       )}
       style={{
-        padding: isCollapsed ? `${theme.spacing.xs} ${theme.spacing.sm}` : undefined,
-        justifyContent: isCollapsed ? 'center' : 'flex-start',
+        padding: isCollapsed ? `8px 6px` : undefined,
+        justifyContent: isCollapsed ? "center" : "flex-start",
       }}
     >
-      <Group position="apart" spacing={0} style={{ width: '100%' }}>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? 'center' : 'flex-start' }}>
-          <ThemeIcon variant="light" size={30}>
+      <Group position="apart" spacing={0} style={{ width: "100%" }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: isCollapsed ? "center" : "flex-start" }}>
+          <ThemeIcon
+            variant="light"
+            size={30}
+            radius="md"
+            color={isActive ? "brand" : "gray"}
+          >
             <Icon size={18} />
           </ThemeIcon>
-          {!isCollapsed && <Box ml="md">{label}</Box>}
+          {!isCollapsed && <Box ml="sm">{label}</Box>}
         </Box>
         {hasLinks && !isCollapsed && (
           <ChevronIcon
@@ -146,7 +143,6 @@ export const LinksGroup = ({ menu, selectedMenu, onSidebarMenu, isCollapsed = fa
                 classes.link,
                 link.id === selectedMenu?.id ? classes.active : ""
               )}
-              //href={link.link}
               key={link.label}
               onClick={() => onSidebarMenu(link)}
             >

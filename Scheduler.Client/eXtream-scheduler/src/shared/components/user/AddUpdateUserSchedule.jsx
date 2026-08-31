@@ -610,7 +610,7 @@ const AddUpdateUserSchedule = ({ userId, organizationId, onModalClose }) => {
                     : `${form.values.serviceProviderIds.length} provider(s) selected`}
                 </Text>
                 {form.values.serviceProviderIds.length > 0 && (
-                  <Badge color="blue" variant="filled">
+                  <Badge color="brand" variant="filled">
                     {form.values.serviceProviderIds.length}
                   </Badge>
                 )}

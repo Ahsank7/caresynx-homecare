@@ -332,7 +332,7 @@ export default function ReportLayout({
             ${reportStyles}
 
             .print-button {
-              background: #228be6;
+              background: #6366f1;
               color: white;
               border: none;
               padding: 12px 24px;
@@ -417,7 +417,7 @@ export default function ReportLayout({
       >
         <Group position="apart">
           <Group spacing="md" noWrap align="flex-start">
-            <ThemeIcon size={48} radius="xl" variant="light" color="blue">
+            <ThemeIcon size={48} radius="xl" variant="light" color="brand">
               <IconPrinter size={22} />
             </ThemeIcon>
             <div>
@@ -436,7 +436,7 @@ export default function ReportLayout({
             {customActions}
             <Button
               variant="filled"
-              color="blue"
+              color="brand"
               radius="xl"
               size="md"
               leftIcon={<IconDownload size={16} />}

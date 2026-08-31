@@ -493,7 +493,7 @@ const StandaloneAdminPortal = () => {
             onClick={() => setNotificationModalOpen(true)}
             size="md"
             variant="outline"
-            color="blue"
+            color="brand"
           >
             Send Notification
           </Button>

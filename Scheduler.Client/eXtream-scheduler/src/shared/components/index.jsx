@@ -8,6 +8,7 @@ export { AppTablePagination } from "./table/AppTablePagination";
 export { AppContainer } from "./AppContainer";
 export { AppDivider } from "./AppDivider";
 export { AppDrawer, FilterSection } from "./AppDrawer";
+export { StatusLegend } from "./StatusLegend";
 export { TruncatedTooltipText } from "./TruncatedTooltipText";
 export { default as PreviewModal } from "./PreviewModal";
 export { Address } from "./user/Address";

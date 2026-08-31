@@ -350,7 +350,7 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
   return (
     <div className={classes.container}>
       <div className={classes.header}>
-        <Title order={3} color="blue" mb={8}>
+        <Title order={3} color="brand" mb={8}>
           Update Appointment
         </Title>
         <Group spacing={6} position="center">
@@ -509,7 +509,7 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
             input: {
               borderColor: theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3],
               '&:focus': {
-                borderColor: theme.colors.blue[6],
+                borderColor: theme.colors.brand[6],
               }
             }
           })}
@@ -527,7 +527,7 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
           <Alert 
             icon={<IconInfoCircle size={14} />} 
             title={<Text size="xs" weight={600}>Attendance Information</Text>}
-            color="blue" 
+            color="brand" 
             variant="light"
             className={classes.alert}
             p="xs"
@@ -553,7 +553,7 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
                 input: {
                   borderColor: theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3],
                   '&:focus': {
-                    borderColor: theme.colors.blue[6],
+                    borderColor: theme.colors.brand[6],
                   }
                 }
               })}
@@ -576,7 +576,7 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
                 input: {
                   borderColor: theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3],
                   '&:focus': {
-                    borderColor: theme.colors.blue[6],
+                    borderColor: theme.colors.brand[6],
                   }
                 }
               })}
@@ -608,7 +608,7 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
           <Alert 
             icon={<IconInfoCircle size={14} />} 
             title={<Text size="xs" weight={600}>Service Provider Assignment</Text>}
-            color="blue" 
+            color="brand" 
             variant="light"
             className={classes.alert}
             p="xs"
@@ -709,7 +709,7 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
               input: {
                 borderColor: theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3],
                 '&:focus': {
-                  borderColor: theme.colors.blue[6],
+                  borderColor: theme.colors.brand[6],
                 }
               }
             })}
@@ -737,9 +737,9 @@ const UpdateAppointment = ({ taskID, franchiseName, onModalClose }) => {
         leftIcon={!isLoading && <IconCheck size={20} />}
         styles={(theme) => ({
           root: {
-            background: theme.colors.blue[6],
+            background: theme.colors.brand[6],
             '&:hover': {
-              background: theme.colors.blue[7],
+              background: theme.colors.brand[7],
             },
             '&:disabled': {
               background: theme.colors.gray[4],

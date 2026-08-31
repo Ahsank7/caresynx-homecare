@@ -25,7 +25,7 @@ const SimpleCaptcha = ({ challenge, inputProps, onRefresh, mt = "md" }) => {
       mt={mt}
       style={{
         background: "#f8fafc",
-        borderColor: "rgba(59, 130, 246, 0.16)",
+        borderColor: "rgba(99, 102, 241, 0.18)",
       }}
     >
       <Group position="apart" align="center" spacing="sm" noWrap>
@@ -41,7 +41,7 @@ const SimpleCaptcha = ({ challenge, inputProps, onRefresh, mt = "md" }) => {
         <Tooltip label="New challenge" withArrow>
           <ActionIcon
             variant="light"
-            color="blue"
+            color="brand"
             radius="md"
             onClick={onRefresh}
             aria-label="New security challenge"

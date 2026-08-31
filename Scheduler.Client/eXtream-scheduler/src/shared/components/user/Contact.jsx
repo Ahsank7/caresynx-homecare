@@ -110,7 +110,7 @@ export function Contact({ userId, organizationId, franchiseId, readOnly = false 
             <tr key={index}>
               <td>{helperFunctions.getRowNumber(100, 1, index)}</td>
               <td>
-                <Badge color="blue" variant="light">
+                <Badge color="brand" variant="light">
                   {row.contactType || "N/A"}
                 </Badge>
               </td>

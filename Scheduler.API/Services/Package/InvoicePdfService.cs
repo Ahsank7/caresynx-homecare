@@ -1,8 +1,6 @@
 using Scheduler.API.Models.Package;
-using Scheduler.API.Services.FileStorage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Text;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using IronPdf;
@@ -12,62 +10,94 @@ namespace Scheduler.API.Services.Package
     public class InvoicePdfService : IInvoicePdfService
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
         private readonly ILogger<InvoicePdfService> _logger;
         private readonly string _connectionString;
         private readonly string _containerName;
 
-        public InvoicePdfService(IConfiguration configuration, ILogger<InvoicePdfService> logger)
+        public InvoicePdfService(
+            IConfiguration configuration,
+            IWebHostEnvironment environment,
+            ILogger<InvoicePdfService> logger)
         {
             _configuration = configuration;
+            _environment = environment;
             _logger = logger;
             _connectionString = _configuration["Storage:Azure:ConnectionString"];
-            _containerName = "invoices"; // Separate container for invoices
+            _containerName = "invoices";
         }
 
         public async Task<string> GenerateAndUploadInvoicePdfAsync(PackageInvoiceViewModel invoice, string organizationName)
         {
             try
             {
-                // Generate PDF bytes
                 var pdfBytes = await GenerateInvoicePdfBytesAsync(invoice, organizationName);
-
-                // Generate filename
                 var fileName = $"invoice-{invoice.InvoiceNumber}-{DateTime.UtcNow:yyyyMMddHHmmss}.pdf";
-                var blobName = $"{invoice.OrganizationId}/{fileName}";
+                var storageType = (_configuration["Storage:Type"] ?? "local").ToLowerInvariant();
 
-                // Upload to Azure Blob Storage
-                var blobServiceClient = new BlobServiceClient(_connectionString);
-                var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
-
-                // Create container if it doesn't exist
-                await containerClient.CreateIfNotExistsAsync(PublicAccessType.None);
-
-                var blobClient = containerClient.GetBlobClient(blobName);
-
-                // Upload PDF
-                using (var stream = new MemoryStream(pdfBytes))
+                if (storageType == "azure" && !string.IsNullOrWhiteSpace(_connectionString))
                 {
-                    var uploadOptions = new BlobUploadOptions
-                    {
-                        HttpHeaders = new BlobHttpHeaders
-                        {
-                            ContentType = "application/pdf"
-                        }
-                    };
-                    
-                    await blobClient.UploadAsync(stream, uploadOptions);
+                    return await UploadToAzureAsync(pdfBytes, invoice.OrganizationId, fileName);
                 }
 
-                var url = blobClient.Uri.ToString();
-                _logger.LogInformation($"Invoice PDF uploaded successfully: {url}");
-
-                return url;
+                return await SaveLocallyAsync(pdfBytes, invoice.OrganizationId, fileName);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error generating/uploading invoice PDF for invoice {invoice.InvoiceNumber}");
                 throw;
             }
+        }
+
+        private async Task<string> UploadToAzureAsync(byte[] pdfBytes, int organizationId, string fileName)
+        {
+            var blobName = $"{organizationId}/{fileName}";
+            var blobServiceClient = new BlobServiceClient(_connectionString);
+            var containerClient = blobServiceClient.GetBlobContainerClient(_containerName);
+            await containerClient.CreateIfNotExistsAsync(PublicAccessType.None);
+
+            var blobClient = containerClient.GetBlobClient(blobName);
+            using (var stream = new MemoryStream(pdfBytes))
+            {
+                var uploadOptions = new BlobUploadOptions
+                {
+                    HttpHeaders = new BlobHttpHeaders
+                    {
+                        ContentType = "application/pdf"
+                    }
+                };
+                await blobClient.UploadAsync(stream, uploadOptions);
+            }
+
+            var url = blobClient.Uri.ToString();
+            _logger.LogInformation($"Invoice PDF uploaded to Azure: {url}");
+            return url;
+        }
+
+        private async Task<string> SaveLocallyAsync(byte[] pdfBytes, int organizationId, string fileName)
+        {
+            var basePath = _configuration["Storage:LocalBaseDir"] ?? "wwwroot/FileStorage";
+            if (basePath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                var uri = new Uri(basePath);
+                basePath = uri.AbsolutePath.TrimStart('/');
+            }
+
+            if (!Path.IsPathRooted(basePath))
+            {
+                basePath = Path.Combine(_environment.ContentRootPath, basePath);
+            }
+
+            var relativeDir = Path.Combine("Invoices", organizationId.ToString());
+            var fullDir = Path.Combine(basePath, relativeDir);
+            Directory.CreateDirectory(fullDir);
+
+            var fullPath = Path.Combine(fullDir, fileName);
+            await File.WriteAllBytesAsync(fullPath, pdfBytes);
+
+            var webPath = $"/Invoices/{organizationId}/{fileName}";
+            _logger.LogInformation($"Invoice PDF saved locally: {fullPath}");
+            return webPath;
         }
 
         public async Task<byte[]> GenerateInvoicePdfBytesAsync(PackageInvoiceViewModel invoice, string organizationName)

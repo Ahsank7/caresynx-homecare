@@ -1,4 +1,4 @@
-import { LoadingOverlay, TextInput, Checkbox, Button, Group } from "@mantine/core";
+import { LoadingOverlay, TextInput, Checkbox, Button, Group, Badge } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -48,45 +48,39 @@ const ToConfirm = () => {
       title: "Type",
       textAlignment: "left",
       render: (record) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {record.recordType === 'Task' ? (
-            <IconClipboard size={16} color="#228be6" />
-          ) : (
-            <IconReceipt size={16} color="#40c057" />
-          )}
-          <span style={{ 
-            fontWeight: 'bold',
-            color: record.recordType === 'Task' ? '#228be6' : '#40c057'
-          }}>
-            {record.recordType}
-          </span>
-        </div>
+        <Badge
+          className="app-status-badge"
+          color={record.recordType === "Task" ? "brand" : "teal"}
+          variant="light"
+        >
+          {record.recordType}
+        </Badge>
       ),
       noWrap: true,
     },
     {
       accessor: "isConfirmed",
-      title: "IsConfirmed",
+      title: "Confirmed",
       textAlignment: "left",
       render: (record) => (record.isConfirmed ? "Yes" : "No"),
       noWrap: true,
     },
     {
       accessor: "taskId",
-      title: "TaskId",
+      title: "Task ID",
       textAlignment: "left",
       noWrap: true,
     },
     {
       accessor: "startTime",
-      title: "StartTime",
+      title: "Start",
       textAlignment: "left",
         render: (record) => Moment(record.startTime).format("h:mm a"),
       noWrap: true,
     },
     {
       accessor: "endTime",
-      title: "EndTime",
+      title: "End",
       textAlignment: "left",
         render: (record) => Moment(record.endTime).format("h:mm a"),
       noWrap: true,
@@ -369,51 +363,31 @@ const ToConfirm = () => {
   return (
     <>
       <AppContainer
-        title="ToConfirm"
+        title="To Confirm"
         showDivider="true"
         button={
           <Group spacing="sm">
             <Button
               disabled={selectedServicesTasks.length === 0}
               onClick={() => setIsConfirmationModalOpen(true)}
-              color="blue"
               variant="filled"
               size="sm"
-              style={{
-                minWidth: 120,
-                color: "#fff", // Ensures white text
-                borderTopLeftRadius: 20,
-                borderBottomLeftRadius: 20,
-              }}
             >
               Confirm Tasks
             </Button>
             <Button
               onClick={open}
-              color="blue"
-              variant="filled"
+              variant="light"
               size="sm"
-              style={{
-                minWidth: 100,
-                color: "#fff",
-                borderTopLeftRadius: 20,
-                borderBottomLeftRadius: 20,
-              }}
             >
               Filter
             </Button>
             <Button
               variant="filled"
-              color="green"
+              color="teal"
               size="sm"
               leftIcon={<IconDownload size={16} />}
               onClick={handleDownloadExcel}
-              style={{
-                minWidth: 100,
-                color: "#fff",
-                borderTopLeftRadius: 20,
-                borderBottomLeftRadius: 20,
-              }}
               disabled={!servicesTasks || servicesTasks.length === 0}
             >
               Download Excel

@@ -712,7 +712,7 @@ const RatesAndBillingSettings = ({ organizationId, organizationName }) => {
                       style={{ cursor: 'pointer' }} 
                       onClick={() => toggleServiceType(serviceType.id)}
                     >
-                      <ThemeIcon color="blue" variant="light" size="sm">
+                      <ThemeIcon color="brand" variant="light" size="sm">
                         <IconBuilding size={16} />
                       </ThemeIcon>
                       <Text weight={600} size="lg">{serviceType.name}</Text>
@@ -791,7 +791,7 @@ const RatesAndBillingSettings = ({ organizationId, organizationName }) => {
                                                       </Group>
                                                     </td>
                                                     <td>
-                                                      <Badge color="blue" variant="light">
+                                                      <Badge color="brand" variant="light">
                                                         ${Number(rate.clientRate || 0).toFixed(2)}
                                                       </Badge>
                                                     </td>
@@ -954,7 +954,7 @@ const RatesAndBillingSettings = ({ organizationId, organizationName }) => {
               <Button variant="outline" onClick={() => setModalOpened(false)}>
                 Cancel
               </Button>
-              <Button type="submit" color="blue">
+              <Button type="submit" color="brand">
                 {editingRate ? 'Update Rate' : 'Add Rate'}
               </Button>
             </Group>

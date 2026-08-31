@@ -231,7 +231,7 @@ const OrganizationCardManagement = ({ organizationId }) => {
       >
         <form onSubmit={form.onSubmit(handleSave)}>
           <Stack spacing="md">
-            <Alert icon={<IconInfoCircle size={16} />} title="Card Validation" color="blue">
+            <Alert icon={<IconInfoCircle size={16} />} title="Card Validation" color="brand">
               A $1.00 test charge will be made to validate your card. This charge will be immediately refunded and will not appear on your final statement.
             </Alert>
             <TextInput

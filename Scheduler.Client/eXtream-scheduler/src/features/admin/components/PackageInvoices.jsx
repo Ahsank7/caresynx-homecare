@@ -125,7 +125,7 @@ const PackageInvoices = ({ organizationId }) => {
         {invoice.paymentStatus === "Pending" && (
           <Button
             size="xs"
-            color="blue"
+            color="brand"
             onClick={() => handleProcessPayment(invoice)}
             loading={processingPayment}
           >
@@ -208,7 +208,7 @@ const PackageInvoices = ({ organizationId }) => {
               </Grid.Col>
             </Grid>
 
-            <Alert title="Charges Breakdown" color="blue">
+            <Alert title="Charges Breakdown" color="brand">
               <Stack spacing="xs">
                 <Group position="apart">
                   <Text size="sm">Per User Charge ({selectedInvoice.clientCount} active users):</Text>

@@ -469,7 +469,7 @@ export const AddUpdateUserLeave = ({
                       Task #{task.taskId || task.id}
                     </Text>
                     {task.taskStatus && (
-                      <Badge size="sm" color="blue">
+                      <Badge size="sm" color="brand">
                         {task.taskStatus}
                       </Badge>
                     )}

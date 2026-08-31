@@ -3,6 +3,11 @@ import { themeService } from '../services/themeService';
 
 const ThemeContext = createContext();
 
+const applyBodyScheme = (scheme) => {
+  if (typeof document === 'undefined') return;
+  document.body.classList.toggle('mantine-dark', scheme === 'dark');
+};
+
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
@@ -15,19 +20,21 @@ export const ThemeProvider = ({ children }) => {
   const [colorScheme, setColorScheme] = useState('light');
 
   useEffect(() => {
-    // Initialize theme from localStorage
     const savedScheme = themeService.getColorScheme();
     setColorScheme(savedScheme);
+    applyBodyScheme(savedScheme);
   }, []);
 
   const toggleColorScheme = () => {
     const newScheme = themeService.toggleColorScheme();
     setColorScheme(newScheme);
+    applyBodyScheme(newScheme);
   };
 
   const setColorSchemeValue = (scheme) => {
     themeService.setColorScheme(scheme);
     setColorScheme(scheme);
+    applyBodyScheme(scheme);
   };
 
   const value = {

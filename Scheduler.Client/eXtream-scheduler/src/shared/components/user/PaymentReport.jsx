@@ -895,7 +895,7 @@ export default function PaymentReport({ info, type }) {
                 </Grid.Col>
                 <Grid.Col span={6}>
                   <Text size="sm" color="dimmed">{type === 'wage' ? 'Payroll No' : 'Invoice No'}</Text>
-                  <Text weight={600} color="blue">#{info.id}</Text>
+                  <Text weight={600} color="brand">#{info.id}</Text>
                 </Grid.Col>
               </Grid>
             </Card>

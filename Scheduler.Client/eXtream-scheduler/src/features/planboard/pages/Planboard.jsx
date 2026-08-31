@@ -2,13 +2,11 @@ import {
   Button,
   LoadingOverlay,
   TextInput,
-  Input,
   MultiSelect,
-  Select,
   Group,
-  Tooltip,
   Stack,
   Text,
+  Badge,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -26,6 +24,7 @@ import {
   UpdateAppointment,
   AppModal,
   TaskLogModal,
+  StatusLegend,
 } from "shared/components";
 import { useFranchise } from "core/context/FranchiseContext";
 import { TaskExpenses } from "shared/components/planboard/TaskExpenses";
@@ -88,17 +87,43 @@ const Planboard = () => {
 
   const pageSize = 25;
 
+  const statusBadge = (status) => {
+    const map = {
+      Scheduled: { color: "violet", label: "Scheduled" },
+      Delayed: { color: "red", label: "Delayed" },
+      "In-Progress": { color: "teal", label: "In Progress" },
+      Completed: { color: "brand", label: "Completed" },
+      Cancelled: { color: "yellow", label: "Cancelled" },
+      Unassigned: { color: "gray", label: "Unassigned" },
+    };
+    const cfg = map[status] || { color: "gray", label: status || "—" };
+    return (
+      <Badge className="app-status-badge" color={cfg.color} variant="light" radius="sm" size="md">
+        {cfg.label}
+      </Badge>
+    );
+  };
+
+  const stickyCol = {
+    position: "sticky",
+    left: 0,
+    zIndex: 1,
+    background: "inherit",
+  };
+
   const tableColumns = [
     {
       accessor: "taskId",
-      title: "TaskId",
+      title: "Task ID",
       textAlignment: "left",
       noWrap: true,
       sortable: true,
+      titleStyle: stickyCol,
+      cellsStyle: stickyCol,
     },
     {
       accessor: "startTime",
-      title: "StartTime",
+      title: "Start",
       textAlignment: "left",
       render: (record) => Moment(record.startTime).format("h:mm a"),
       noWrap: true,
@@ -106,7 +131,7 @@ const Planboard = () => {
     },
     {
       accessor: "endTime",
-      title: "EndTime",
+      title: "End",
       textAlignment: "left",
       render: (record) => Moment(record.endTime).format("h:mm a"),
       noWrap: true,
@@ -122,50 +147,25 @@ const Planboard = () => {
     },
     {
       accessor: "CheckInTime",
-      title: "CheckIn Time",
+      title: "Check-in",
       textAlignment: "left",
-      render: (record) => record.checkInTime ? Moment(record.checkInTime).format("h:mm a") : "",
+      render: (record) => record.checkInTime ? Moment(record.checkInTime).format("h:mm a") : "—",
       noWrap: true,
+      hidden: true,
     },
     {
       accessor: "CheckOutTime",
-      title: "CheckOut Time",
+      title: "Check-out",
       textAlignment: "left",
-      render: (record) => record.checkOutTime ? Moment(record.checkOutTime).format("h:mm a") : "",
+      render: (record) => record.checkOutTime ? Moment(record.checkOutTime).format("h:mm a") : "—",
       noWrap: true,
+      hidden: true,
     },
     {
       accessor: "taskStatus",
       title: "Status",
       textAlignment: "left",
-      cellsStyle: (row) =>
-        row.taskStatus === "Scheduled"
-          ? {
-            background: "#5933f0c9",
-          }
-          : row.taskStatus === "Delayed"
-            ? {
-              background: "#fa5252",
-            }
-            : row.taskStatus === "In-Progress"
-              ? {
-                background: "#40c057",
-              }
-              : row.taskStatus === "Completed"
-                ? {
-                  background: "#228be6",
-                }
-                : row.taskStatus === "Cancelled"
-                  ? {
-                    background: "#fab005",
-                  }
-                  : row.taskStatus === "Unassigned"
-                    ? {
-                      background: "#B8956A", // Light brown for unassigned tasks
-                    }
-                    : {
-                      background: "lightOrange",
-                    },
+      render: (record) => statusBadge(record.taskStatus),
       noWrap: true,
     },
     {
@@ -183,13 +183,14 @@ const Planboard = () => {
     //},
     {
       accessor: "clientUserNo",
-      title: "Client UserNo",
+      title: "Client No",
       textAlignment: "left",
       noWrap: true,
+      hidden: true,
     },
     {
       accessor: "clientName",
-      title: "Client Name",
+      title: "Client",
       textAlignment: "left",
       noWrap: true,
       sortable: true,
@@ -200,6 +201,7 @@ const Planboard = () => {
       textAlignment: "left",
       noWrap: true,
       sortable: true,
+      hidden: true,
     },
     {
       accessor: "clientPhone",
@@ -207,6 +209,7 @@ const Planboard = () => {
       textAlignment: "left",
       noWrap: true,
       sortable: true,
+      hidden: true,
     },
     {
       accessor: "clientMobile",
@@ -214,46 +217,59 @@ const Planboard = () => {
       textAlignment: "left",
       noWrap: true,
       sortable: true,
+      hidden: true,
     },
     {
       accessor: "serviceProviderUserNo",
-      title: "ServiceProvider UserNo",
+      title: "Provider No",
       textAlignment: "left",
       noWrap: true,
+      hidden: true,
     },
     {
       accessor: "serviceProviderName",
-      title: "ServiceProvider Name",
+      title: "Provider",
       textAlignment: "left",
       noWrap: true,
       sortable: true,
     },
     {
       accessor: "serviceProviderEmail",
-      title: "ServiceProvider Email",
+      title: "Provider Email",
       textAlignment: "left",
       noWrap: true,
       sortable: true,
+      hidden: true,
     },
     {
       accessor: "serviceProviderPhone",
-      title: "ServiceProvider Phone",
+      title: "Provider Phone",
       textAlignment: "left",
       noWrap: true,
       sortable: true,
+      hidden: true,
     },
     {
       accessor: "serviceProviderMobile",
-      title: "ServiceProvider Mobile",
+      title: "Provider Mobile",
       textAlignment: "left",
       noWrap: true,
       sortable: true,
+      hidden: true,
     },
     {
       accessor: "isConfirmed",
-      title: "IsConfirmed",
+      title: "Confirmed",
       textAlignment: "left",
-      render: (record) => (record.isConfirmed ? "Yes" : "No"),
+      render: (record) => (
+        <Badge
+          className="app-status-badge"
+          color={record.isConfirmed ? "teal" : "gray"}
+          variant="light"
+        >
+          {record.isConfirmed ? "Yes" : "No"}
+        </Badge>
+      ),
       noWrap: true,
     },
   ];
@@ -519,21 +535,18 @@ const Planboard = () => {
         button={
           <Group spacing="xs">
             <Button
-              variant="filled"
-              color="blue"
+              variant="light"
               size="sm"
               onClick={open}
-              style={{ minWidth: 100, color: "#fff", borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
             >
               Filter
             </Button>
             <Button
               variant="filled"
-              color="green"
+              color="teal"
               size="sm"
               leftIcon={<IconDownload size={16} />}
               onClick={handleDownloadExcel}
-              style={{ minWidth: 100, color: "#fff", borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
               disabled={!servicesTasks || servicesTasks.length === 0}
             >
               Download Excel
@@ -597,9 +610,10 @@ const Planboard = () => {
           recordsPerPage={pageSize}
           page={pageNumber}
           onPageChange={(p) => handlePagination(p)}
-          paginationSize="lg"
+          paginationSize="sm"
           idAccessor="taskId"
         />
+        <StatusLegend mt="md" mb="xs" />
       </AppContainer>
 
       <AppDrawer
@@ -687,33 +701,7 @@ const Planboard = () => {
           />
         </form>
       </AppDrawer>
-      <Group
-        position="apart"
-        style={{
-          width: "100%",
-          justifyContent: "center",
-        }}
-      >
-        <Tooltip label="Scheduled">
-          <Button style={{ backgroundColor: "#5933f0c9" }}>Scheduled</Button>
-        </Tooltip>
-        <Tooltip label="In-Progress">
-          <Button color="green">In-Progress</Button>
-        </Tooltip>
-        <Tooltip label="Cancelled">
-          <Button color="yellow">Cancelled</Button>
-        </Tooltip>
-        <Tooltip label="Completed">
-          <Button color="blue">Completed</Button>
-        </Tooltip>
-        <Tooltip label="Delay">
-          <Button color="red">Delay</Button>
-        </Tooltip>
-        <Tooltip label="Unassigned">
-          <Button style={{ backgroundColor: "#B8956A" }}>Unassigned</Button>
-        </Tooltip>
-      </Group>
-             <AppModal
+      <AppModal
          opened={isModalOpen}
          onClose={() => setIsModalOpen(false)}
          title={"Appointment"}

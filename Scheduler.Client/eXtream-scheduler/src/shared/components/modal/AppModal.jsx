@@ -1,5 +1,4 @@
 import { Box, Modal } from "@mantine/core";
-import { AppDivider } from "shared/components";
 
 export const AppModal = ({
     opened,
@@ -15,20 +14,37 @@ export const AppModal = ({
             onClose={onClose}
             title={title}
             size={size}
-            zIndex={zIndex}
+            zIndex={zIndex || 400}
+            centered
             closeOnEscape={false}
             closeOnClickOutside={false}
-            padding="1.2rem 1.5rem"
+            padding="lg"
+            radius="md"
             shadow="xl"
+            overlayBlur={4}
+            overlayOpacity={0.45}
             transitionProps={{
                 transition: "pop",
                 duration: 200,
-                timingFunction: "linear",
+                timingFunction: "ease",
             }}
-            style={{ 'overflow': 'hidden' }}
+            styles={(theme) => ({
+              title: {
+                fontWeight: 600,
+                fontSize: theme.fontSizes.lg,
+              },
+              header: {
+                borderBottom: `1px solid ${
+                  theme.colorScheme === "dark"
+                    ? theme.colors.dark[4]
+                    : theme.colors.gray[2]
+                }`,
+                marginBottom: theme.spacing.md,
+                paddingBottom: theme.spacing.sm,
+              },
+            })}
         >
-            <AppDivider></AppDivider>
-            <Box mt="lg" style={{ 'overflow': 'hidden' }}>{children}</Box>
+            <Box style={{ overflow: "hidden" }}>{children}</Box>
         </Modal>
     );
 };

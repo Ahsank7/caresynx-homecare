@@ -275,7 +275,7 @@ const AdminOrganizationList = ({
                 <Button
                   size="sm"
                   variant="light"
-                  color="blue"
+                  color="brand"
                   leftIcon={<IconPlus size={16} />}
                   onClick={(e) => {
                     e.stopPropagation();

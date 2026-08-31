@@ -54,12 +54,16 @@ namespace Scheduler.API.Services.Service
             return result;
         }
 
-        public async Task<bool> DeleteServiceTypeAsync(int id)
+        public async Task<DeleteEntityResult> DeleteServiceTypeAsync(int id)
         {
             var dp_params = new DynamicParameters();
             dp_params.Add("@pId", id, DbType.Int32);
-            var result = await _dapperRepository.ExecuteAsync("[dbo].[DeleteServiceType]", dp_params, CommandType.StoredProcedure);
-            return result > 0;
+            var result = await _dapperRepository.GetAsync<DeleteEntityResult>("[dbo].[DeleteServiceType]", dp_params, CommandType.StoredProcedure);
+            return result ?? new DeleteEntityResult
+            {
+                Deleted = false,
+                Message = "Service type not found or could not be deleted"
+            };
         }
     }
 }

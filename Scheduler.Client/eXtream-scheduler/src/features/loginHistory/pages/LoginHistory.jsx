@@ -328,33 +328,28 @@ const LoginHistory = () => {
         button={
           <Group spacing="xs">
             <Button
-              variant="filled"
-              color="blue"
+              variant="light"
               size="sm"
               onClick={open}
-              style={{ minWidth: 100, color: "#fff", borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
+              leftIcon={<IconFilter size={16} />}
             >
-              <IconFilter size={16} style={{ marginRight: 8 }} />
               Filter
             </Button>
             <Button
               variant="filled"
-              color="green"
+              color="teal"
               size="sm"
               leftIcon={<IconDownload size={16} />}
               onClick={handleDownloadExcel}
-              style={{ minWidth: 100, color: "#fff", borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
               disabled={!loginHistory || loginHistory.length === 0}
             >
               Download Excel
             </Button>
             <Button
-              variant="outline"
-              color="blue"
+              variant="default"
               size="sm"
               leftIcon={<IconRefresh size={16} />}
               onClick={getLoginHistory}
-              style={{ minWidth: 100, borderTopLeftRadius: 20, borderBottomLeftRadius: 20 }}
             >
               Refresh
             </Button>
@@ -368,7 +363,7 @@ const LoginHistory = () => {
           <Alert
             icon={<IconCalendar size={16} />}
             title="No Login History"
-            color="blue"
+            color="brand"
             variant="light"
             mt="md"
           >

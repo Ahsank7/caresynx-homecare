@@ -169,7 +169,7 @@ const PackageManagement = () => {
       <td>
         <Group spacing="xs">
           <ActionIcon
-            color="blue"
+            color="brand"
             variant="light"
             onClick={() => handleOpenModal(pkg)}
           >

@@ -131,9 +131,18 @@ export default function Reports() {
       showDivider={true}
     >
       <Container size="xl" px={0}>
-        <Paper p="md" mb="xl" withBorder radius="md" style={{ backgroundColor: '#f8f9fa' }}>
+        <Paper
+          p="md"
+          mb="xl"
+          withBorder
+          radius="md"
+          sx={(theme) => ({
+            backgroundColor:
+              theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
+          })}
+        >
           <Group>
-            <IconFileText size={24} color="#228be6" />
+            <IconFileText size={24} color="#6366f1" />
             <div>
               <Text size="lg" weight={600} color="dark">
                 Select a Report Type

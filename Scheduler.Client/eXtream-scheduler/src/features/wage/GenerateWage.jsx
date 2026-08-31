@@ -91,7 +91,7 @@ const GenerateWage = () => {
     { key: 'recordType', label: 'Type', render: (value) => (
       <span style={{ 
         fontWeight: 'bold',
-        color: value === 'Task' ? '#228be6' : '#40c057',
+        color: value === 'Task' ? '#6366f1' : '#40c057',
         fontSize: '12px'
       }}>
         {value}

@@ -5,8 +5,9 @@ const useStyles = createStyles((theme) => ({
     position: "sticky",
     top: 0,
     backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+      theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
     transition: "box-shadow 150ms ease",
+    zIndex: 2,
 
     "&::after": {
       content: '""',
@@ -15,7 +16,7 @@ const useStyles = createStyles((theme) => ({
       right: 0,
       bottom: 0,
       borderBottom: `1px solid ${theme.colorScheme === "dark"
-          ? theme.colors.dark[3]
+          ? theme.colors.dark[4]
           : theme.colors.gray[2]
         }`,
     },
@@ -26,13 +27,18 @@ const useStyles = createStyles((theme) => ({
   },
 
   headerHeaderRow: {
-    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+    backgroundColor: theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.colors.gray[0],
   },
 
   headerHeaderColumn: {
-    paddingTop: "1.1rem !important",
-    paddingBottom: "1.1rem !important",
+    paddingTop: "0.85rem !important",
+    paddingBottom: "0.85rem !important",
     whiteSpace: "nowrap",
+    fontWeight: 600,
+    fontSize: theme.fontSizes.xs,
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+    color: theme.colorScheme === "dark" ? theme.colors.dark[1] : theme.colors.gray[6],
   },
 }));
 

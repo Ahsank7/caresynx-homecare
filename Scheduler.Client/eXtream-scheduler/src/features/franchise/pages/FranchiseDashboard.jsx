@@ -32,6 +32,7 @@ import { franchiseDashboardService } from "core/services/franchiseDashboardServi
 import { useParams } from "react-router-dom";
 import { usePermissions } from "core/context/PermissionContext";
 import { useFranchise } from "core/context/FranchiseContext";
+import { brand, chartColors } from "theme";
 
 import { Line, Bar, Pie, Doughnut } from "react-chartjs-2";
 import { 
@@ -69,21 +70,21 @@ const toDateString = (date) => {
 };
 
 const STAT_CARDS_LIGHT_BG = {
-  blue:   "linear-gradient(135deg, #e7f5ff 0%, #d0ebff 100%)",
-  green:  "linear-gradient(135deg, #ebfbee 0%, #d3f9d8 100%)",
+  brand:  "linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)",
+  teal:   "linear-gradient(135deg, #e6fcf5 0%, #c3fae8 100%)",
   violet: "linear-gradient(135deg, #f3f0ff 0%, #e5dbff 100%)",
   orange: "linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%)",
   cyan:   "linear-gradient(135deg, #e3fafc 0%, #c5f6fa 100%)",
-  red:    "linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%)",
+  pink:   "linear-gradient(135deg, #fff0f6 0%, #ffdeeb 100%)",
 };
 
 const STAT_CARDS = [
-  { key: "totalClients",          title: "Total Clients",     subtitle: "Active Clients",  icon: IconUsers,        color: "blue" },
-  { key: "totalServiceProviders",  title: "Service Providers", subtitle: "Active Providers", icon: IconUserCheck,     color: "green" },
+  { key: "totalClients",          title: "Total Clients",     subtitle: "Active Clients",  icon: IconUsers,        color: "brand" },
+  { key: "totalServiceProviders",  title: "Service Providers", subtitle: "Active Providers", icon: IconUserCheck,     color: "teal" },
   { key: "totalStaff",            title: "Total Staff",       subtitle: "Active Staff",    icon: IconNotes,        color: "violet" },
   { key: "totalTasks",            title: "Total Tasks",       subtitle: "This Period",     icon: IconChartBar,     color: "orange" },
   { key: "totalBillingInvoices",   title: "Billing Invoices",  subtitle: "This Period",     icon: IconReceipt,      color: "cyan" },
-  { key: "totalWages",            title: "Total Wages",       subtitle: "This Period",     icon: IconCashBanknote, color: "red" },
+  { key: "totalWages",            title: "Total Wages",       subtitle: "This Period",     icon: IconCashBanknote, color: "pink" },
 ];
 
 const useStyles = createStyles((theme) => ({
@@ -221,10 +222,7 @@ const FranchiseDashboard = () => {
     datasets: [{
       label: "Service Requests",
       data: dashboardData?.popularServices?.map(s => s.count) || [],
-      backgroundColor: [
-        "#228be6", "#40c057", "#fab005", "#fa5252", "#845ef7",
-        "#15aabf", "#fd7e14", "#6f42c1", "#e83e8c", "#20c997"
-      ],
+      backgroundColor: chartColors,
       borderRadius: 6,
     }],
   };
@@ -234,10 +232,7 @@ const FranchiseDashboard = () => {
     datasets: [{
       label: "Task Count",
       data: dashboardData?.serviceTaskStatuses?.map(s => s.count) || [],
-      backgroundColor: dashboardData?.serviceTaskStatuses?.map(s => s.color) || [
-        "#228be6", "#40c057", "#fab005", "#fa5252", "#845ef7",
-        "#15aabf", "#fd7e14", "#6f42c1", "#e83e8c", "#20c997"
-      ],
+      backgroundColor: dashboardData?.serviceTaskStatuses?.map(s => s.color) || chartColors,
       borderRadius: 6,
     }],
   };
@@ -258,10 +253,10 @@ const FranchiseDashboard = () => {
       label: "Billing Amount",
       data: dashboardData?.billingTrend?.map(b => b.amount) || [],
       fill: true,
-      backgroundColor: "rgba(34, 139, 230, 0.08)",
-      borderColor: "#228be6",
+      backgroundColor: "rgba(99, 102, 241, 0.10)",
+      borderColor: brand.indigo,
       tension: 0.4,
-      pointBackgroundColor: "#228be6",
+      pointBackgroundColor: brand.indigo,
       pointRadius: 4,
     }],
   };
@@ -272,10 +267,10 @@ const FranchiseDashboard = () => {
       label: "Wage Amount",
       data: dashboardData?.wageTrend?.map(w => w.amount) || [],
       fill: true,
-      backgroundColor: "rgba(64, 192, 87, 0.08)",
-      borderColor: "#40c057",
+      backgroundColor: "rgba(16, 185, 129, 0.10)",
+      borderColor: brand.emerald,
       tension: 0.4,
-      pointBackgroundColor: "#40c057",
+      pointBackgroundColor: brand.emerald,
       pointRadius: 4,
     }],
   };
@@ -287,7 +282,7 @@ const FranchiseDashboard = () => {
         dashboardData?.billingSummary?.paidCount || 0,
         dashboardData?.billingSummary?.unpaidCount || 0
       ],
-      backgroundColor: ["#40c057", "#fa5252"],
+      backgroundColor: [brand.emerald, brand.rose],
       borderWidth: 2,
       borderColor: "#fff",
     }],
@@ -300,7 +295,7 @@ const FranchiseDashboard = () => {
         dashboardData?.wageSummary?.paidCount || 0,
         dashboardData?.wageSummary?.unpaidCount || 0
       ],
-      backgroundColor: ["#40c057", "#fa5252"],
+      backgroundColor: [brand.emerald, brand.rose],
       borderWidth: 2,
       borderColor: "#fff",
     }],
@@ -359,7 +354,7 @@ const FranchiseDashboard = () => {
       >
         <Group position="apart" mb="sm">
           <Group spacing="xs">
-            <ThemeIcon variant="light" color="blue" size="md">
+            <ThemeIcon variant="light" color="brand" size="md">
               <IconFilter size={16} />
             </ThemeIcon>
             <Text weight={600} size="md">Dashboard Filters</Text>
@@ -443,7 +438,7 @@ const FranchiseDashboard = () => {
                 className={cx(classes.statCard, isDark && classes.statCardDark)}
                 style={
                   isDark
-                    ? { borderLeftColor: theme.colors[card.color]?.[5] ?? theme.colors.blue[5] }
+                    ? { borderLeftColor: theme.colors[card.color]?.[5] ?? theme.colors.brand[5] }
                     : { background: STAT_CARDS_LIGHT_BG[card.color] }
                 }
               >

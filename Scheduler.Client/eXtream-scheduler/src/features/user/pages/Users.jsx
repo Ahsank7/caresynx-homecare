@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Group, LoadingOverlay, TextInput } from "@mantine/core";
+import { Button, Group, LoadingOverlay, TextInput, Badge } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { AppTable, AppContainer, AppDrawer } from "shared/components";
 import { localStoreService, profileService } from "core/services";
@@ -74,14 +74,14 @@ const Users = ({ userTypeID }) => {
   const tableColumns = [
     {
       accessor: "index",
-      title: "SrNo",
+      title: "Sr No",
       textAlignment: "left",
       render: (record) => clients.indexOf(record) + 1,
       noWrap: true,
     },
     {
       accessor: "userNo",
-      title: "UserNo",
+      title: "User No",
       textAlignment: "left",
       noWrap: true,
     },
@@ -188,7 +188,15 @@ const Users = ({ userTypeID }) => {
       accessor: "status",
       title: "Status",
       textAlignment: "left",
-      render: (record) => record.status === 'Active' ? <span style={{ color: 'green' }}>Active</span> : <span style={{ color: 'red' }}>In-Active</span>,
+      render: (record) => (
+        <Badge
+          className="app-status-badge"
+          color={record.status === "Active" ? "teal" : "red"}
+          variant="light"
+        >
+          {record.status === "Active" ? "Active" : "Inactive"}
+        </Badge>
+      ),
       sortable: true,
     },
     {
@@ -300,7 +308,7 @@ const Users = ({ userTypeID }) => {
         }
         button={
           <Group spacing="xs">
-            <Button variant="outline" onClick={onFilterBtnOpen}>
+            <Button variant="light" onClick={onFilterBtnOpen}>
               Filter
             </Button>
             <Button onClick={() => handleProfileDetail(null)}>
@@ -331,7 +339,7 @@ const Users = ({ userTypeID }) => {
           recordsPerPage={pageSize}
           page={pageNumber}
           onPageChange={(p) => handlePagination(p)}
-          paginationSize="lg"
+          paginationSize="sm"
         />
         {/* <AppTable
           thead={tableColumns}

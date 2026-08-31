@@ -5,15 +5,18 @@ import { useSidebar } from "../../context/SidebarContext";
 const useStyles = createStyles((theme) => ({
   navbar: {
     backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.white,
-    paddingBottom: 0,
-    borderRight: 0,
-    height: "92vh",
+      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+    paddingBottom: theme.spacing.xs,
+    paddingTop: theme.spacing.xs,
+    borderRight: `1px solid ${
+      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[2]
+    }`,
+    height: "100%",
     transition: "width 0.2s ease, min-width 0.2s ease",
   },
 }));
 
-const COLLAPSED_WIDTH = 60;
+const COLLAPSED_WIDTH = 64;
 
 export const Sidebar = ({ sidebarMenu, selectedMenu, onSidebarMenu }) => {
   const { classes } = useStyles();
@@ -33,7 +36,7 @@ export const Sidebar = ({ sidebarMenu, selectedMenu, onSidebarMenu }) => {
       className={classes.navbar}
       width={isCollapsed ? { base: COLLAPSED_WIDTH } : { base: "100%" }}
     >
-      <Navbar.Section grow component={ScrollArea}>
+      <Navbar.Section grow component={ScrollArea} px={isCollapsed ? 4 : 8}>
         {mainMenus.map((menu) => (
           <LinksGroup
             key={menu.id}
@@ -46,7 +49,7 @@ export const Sidebar = ({ sidebarMenu, selectedMenu, onSidebarMenu }) => {
       </Navbar.Section>
 
       {footerMenus.length > 0 && (
-        <Navbar.Section>
+        <Navbar.Section px={isCollapsed ? 4 : 8} pb="sm">
           {footerMenus.map((menu) => (
             <LinksGroup
               key={menu.id}

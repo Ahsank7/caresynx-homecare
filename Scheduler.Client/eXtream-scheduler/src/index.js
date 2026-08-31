@@ -4,6 +4,7 @@ import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 //import "@mantine/notifications/styles.css";
 import "./styles/index.css";
+import "./styles/app.css";
 import "./styles/landing.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -11,6 +12,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, useTheme } from "./core/context/ThemeContext";
 import { SidebarProvider } from "./core/context/SidebarContext";
 import { PermissionProvider } from "./core/context/PermissionContext";
+import { createAppTheme } from "./theme";
 
 const AppWrapper = () => {
   const { colorScheme } = useTheme();
@@ -19,14 +21,7 @@ const AppWrapper = () => {
     <MantineProvider 
       withGlobalStyles 
       withNormalizeCSS
-      theme={{
-        colorScheme,
-        primaryColor: 'blue',
-        fontFamily: 'Inter, sans-serif',
-        headings: {
-          fontFamily: 'Inter, sans-serif',
-        },
-      }}
+      theme={createAppTheme(colorScheme)}
     >
       <Notifications />
       <App />

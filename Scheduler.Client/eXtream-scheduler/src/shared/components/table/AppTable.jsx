@@ -3,14 +3,15 @@ import { Table, ScrollArea, Button, Box, createStyles } from "@mantine/core";
 
 import { AppTableHeader, AppTablePagination, AppTableBody } from "shared/components";
 
-const useStyles = createStyles(() => ({
+const useStyles = createStyles((theme) => ({
   filterBtn: {
     position: "absolute",
     right: 0,
-    top: ".5rem",
+    top: "0.75rem",
     zIndex: 1,
-    borderBottomLeftRadius: "3rem",
-    borderTopLeftRadius: "3rem",
+    borderBottomLeftRadius: "2rem",
+    borderTopLeftRadius: "2rem",
+    fontWeight: 600,
   },
 }));
 

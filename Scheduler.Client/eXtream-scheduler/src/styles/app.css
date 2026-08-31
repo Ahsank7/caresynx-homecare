@@ -1,0 +1,121 @@
+/* App-wide look that Mantine theme cannot fully reach (DataTable, canvas, nested cards). */
+
+:root {
+  --cs-brand: #6366f1;
+  --cs-brand-dark: #4f46e5;
+  --cs-violet: #8b5cf6;
+  --cs-cyan: #06b6d4;
+  --cs-canvas: #f8fafc;
+  --cs-canvas-dark: #1a1b1e;
+  --cs-header-height: 56px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--cs-canvas);
+}
+
+body.mantine-dark {
+  background-color: var(--cs-canvas-dark);
+}
+
+/* Page canvas — used by Layout */
+.app-page-canvas {
+  background-color: var(--cs-canvas);
+}
+
+body.mantine-dark .app-page-canvas {
+  background-color: var(--cs-canvas-dark);
+}
+
+/* Keep filter drawers flush under the header (portaled overlays read :root). */
+.mantine-Drawer-inner {
+  top: var(--cs-header-height, 56px) !important;
+  bottom: 0 !important;
+  height: auto !important;
+  padding-top: 0 !important;
+}
+
+.mantine-Drawer-overlay {
+  top: var(--cs-header-height, 56px) !important;
+}
+
+.mantine-Drawer-content {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+/* mantine-datatable */
+.mantine-datatable {
+  --mantine-datatable-border-color: #e2e8f0;
+}
+
+body.mantine-dark .mantine-datatable {
+  --mantine-datatable-border-color: #373a40;
+}
+
+.mantine-datatable thead tr th {
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b !important;
+  background-color: #f8fafc !important;
+}
+
+body.mantine-dark .mantine-datatable thead tr th {
+  color: #adb5bd !important;
+  background-color: #25262b !important;
+}
+
+.mantine-datatable tbody tr:hover td {
+  background-color: #f1f5f9 !important;
+}
+
+body.mantine-dark .mantine-datatable tbody tr:hover td {
+  background-color: #2c2e33 !important;
+}
+
+.mantine-datatable-pagination {
+  padding: 0.75rem 1rem !important;
+}
+
+/* Status badges in tables */
+.app-status-badge {
+  text-transform: none !important;
+  font-weight: 600;
+  font-size: 12px !important;
+  height: 24px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* Planboard / calendar status legends — readable at 100% zoom */
+.app-status-legend-label {
+  font-size: 14px !important;
+  letter-spacing: 0.01em;
+}
+
+.app-status-legend-badge {
+  text-transform: none !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  letter-spacing: 0.01em;
+}
+
+.app-status-legend-badge .mantine-Badge-inner {
+  font-size: 13px;
+  font-weight: 700;
+}

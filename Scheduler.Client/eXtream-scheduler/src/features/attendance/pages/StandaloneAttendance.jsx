@@ -63,7 +63,7 @@ const useStyles = createStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: `linear-gradient(135deg, ${theme.colors.blue[6]} 0%, ${theme.colors.blue[8]} 100%)`,
+    background: `linear-gradient(135deg, ${theme.colors.brand[6]} 0%, ${theme.colors.brand[8]} 100%)`,
   },
   loginCard: {
     maxWidth: 400,
@@ -476,7 +476,7 @@ const StandaloneAttendance = () => {
       <div className={classes.loginContainer}>
         <Card className={classes.loginCard}>
           <div className={classes.header}>
-            <Title order={1} color="blue" mb="sm">
+            <Title order={1} color="brand" mb="sm">
               Service Provider Portal
             </Title>
             <Text size="lg" color="dimmed" mb="md">
@@ -516,7 +516,7 @@ const StandaloneAttendance = () => {
             <Alert
               icon={<IconInfoCircle size={16} />}
               title="Access Information"
-              color="blue"
+              color="brand"
               variant="light"
             >
               This portal is exclusively for Service Providers. Please use your assigned credentials to access your daily tasks and attendance management.
@@ -546,14 +546,14 @@ const StandaloneAttendance = () => {
       
       {/* Header */}
       <div className={classes.header}>
-        <Title order={1} color="blue" mb="sm">
+        <Title order={1} color="brand" mb="sm">
           Service Provider Attendance Portal
         </Title>
         <Text size="lg" color="dimmed" mb="md">
           {formatDate(today)}
         </Text>
         <Group position="center" spacing="md">
-          <Badge size="lg" color="blue" variant="light">
+          <Badge size="lg" color="brand" variant="light">
             <IconCalendar size={16} style={{ marginRight: 8 }} />
             Today's Tasks
           </Badge>
@@ -612,7 +612,7 @@ const StandaloneAttendance = () => {
                   {/* Client Information */}
                   <Divider />
                   <div className={classes.infoRow}>
-                    <IconUser size={16} color={theme.colors.blue[6]} />
+                    <IconUser size={16} color={theme.colors.brand[6]} />
                     <Text size="sm" weight={500}>
                       {task.clientName || 'N/A'}
                     </Text>
@@ -662,7 +662,7 @@ const StandaloneAttendance = () => {
 
                   {task.checkOutTime && (
                     <div className={classes.infoRow}>
-                      <IconLogout size={16} color={theme.colors.blue[6]} />
+                      <IconLogout size={16} color={theme.colors.brand[6]} />
                       <Text size="sm" weight={500}>
                         Checked Out: {formatTime(task.checkOutTime)}
                       </Text>
@@ -703,7 +703,7 @@ const StandaloneAttendance = () => {
               <Alert
                 icon={<IconInfoCircle size={16} />}
                 title="Task Information"
-                color="blue"
+                color="brand"
                 variant="light"
               >
                 <Text size="sm">
@@ -774,7 +774,7 @@ const StandaloneAttendance = () => {
         className={classes.refreshButton}
         size="xl"
         radius="xl"
-        color="blue"
+        color="brand"
         variant="filled"
         onClick={fetchTodaysTasks}
         loading={isLoading}

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - on-care
     paths:
       - 'Scheduler.Client/eXtream-scheduler/**'
       - '.github/workflows/deploy-ui.yml'

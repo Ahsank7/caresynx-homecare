@@ -25,7 +25,7 @@ const NotificationItem = ({ notification, onRead, onDelete, theme }) => {
       case "success": return "green";
       case "warning": return "yellow";
       case "error": return "red";
-      case "activity": return "blue";
+      case "activity": return "brand";
       default: return "gray";
     }
   };
@@ -55,7 +55,7 @@ const NotificationItem = ({ notification, onRead, onDelete, theme }) => {
       style={{
         backgroundColor: notification.isRead 
           ? (theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0])
-          : (theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.blue[0]),
+          : (theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.brand[0]),
         borderLeft: `3px solid ${theme.colors[getNotificationColor(notification.type)][6]}`,
         cursor: notification.actionUrl ? 'pointer' : 'default',
         transition: 'background-color 0.2s',
@@ -84,7 +84,7 @@ const NotificationItem = ({ notification, onRead, onDelete, theme }) => {
               </Badge>
             )}
             {!notification.isRead && (
-              <Badge size="xs" color="blue">
+              <Badge size="xs" color="brand">
                 New
               </Badge>
             )}
@@ -102,7 +102,7 @@ const NotificationItem = ({ notification, onRead, onDelete, theme }) => {
             <Tooltip label="Mark as read">
               <ActionIcon
                 size="sm"
-                color="blue"
+                color="brand"
                 variant="subtle"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -257,10 +257,10 @@ export function NotificationBell({ theme }) {
           color="red"
           disabled={unreadCount === 0}
         >
-          <Tooltip label="Notifications">
+          <Tooltip label="Notifications" position="bottom">
             <ActionIcon
-              variant="outline"
-              size="lg"
+              variant="subtle"
+              size="md"
               onClick={() => setOpened(!opened)}
             >
               <IconBell size="1.1rem" />

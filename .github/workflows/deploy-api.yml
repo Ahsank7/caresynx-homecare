@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - on-care
   workflow_dispatch:
 
 concurrency:
@@ -226,6 +227,24 @@ jobs:
             --exclude='wwwroot/FileStorage/' \
             -e "ssh -p $VPS_PORT -i ~/.ssh/vps_key" \
             "$PUBLISH_DIR/" "$VPS_USER@$VPS_HOST:$VPS_API_DIR/"
+
+      - name: Configure local file storage on VPS
+        run: |
+          ssh -p "$VPS_PORT" -i ~/.ssh/vps_key "$VPS_USER@$VPS_HOST" \
+            "set -e;
+             sudo mkdir -p \
+               '$VPS_API_DIR/wwwroot/FileStorage/ProfileImages' \
+               '$VPS_API_DIR/wwwroot/FileStorage/OrganizationLogos' \
+               '$VPS_API_DIR/wwwroot/FileStorage/UserDocument' \
+               '$VPS_API_DIR/wwwroot/FileStorage/Invoices';
+             sudo touch '$VPS_API_DIR/.env';
+             sudo grep -v -E '^(Storage__Type|Storage__LocalBaseDir)=' '$VPS_API_DIR/.env' | sudo tee '$VPS_API_DIR/.env.next' > /dev/null;
+             printf '%s\n' 'Storage__Type=local' 'Storage__LocalBaseDir=wwwroot/FileStorage' | sudo tee -a '$VPS_API_DIR/.env.next' > /dev/null;
+             sudo mv '$VPS_API_DIR/.env.next' '$VPS_API_DIR/.env';
+             sudo chown '$VPS_SERVICE_USER:$VPS_SERVICE_GROUP' '$VPS_API_DIR/.env';
+             sudo chmod 600 '$VPS_API_DIR/.env';
+             sudo chown -R '$VPS_SERVICE_USER:$VPS_SERVICE_GROUP' '$VPS_API_DIR/wwwroot';
+             sudo chmod -R ug+rwx '$VPS_API_DIR/wwwroot/FileStorage'"
 
       - name: Restart API service
         run: |

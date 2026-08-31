@@ -5,11 +5,9 @@ namespace Scheduler.API.Services.Package
     public interface IInvoicePdfService
     {
         /// <summary>
-        /// Generate PDF for an invoice and upload to Azure
+        /// Generate PDF for an invoice and save it using the configured storage provider.
         /// </summary>
-        /// <param name="invoice">Invoice data</param>
-        /// <param name="organizationName">Organization name</param>
-        /// <returns>Azure Blob URL of the generated PDF</returns>
+        /// <returns>Public URL or web path of the generated PDF</returns>
         Task<string> GenerateAndUploadInvoicePdfAsync(PackageInvoiceViewModel invoice, string organizationName);
         
         /// <summary>

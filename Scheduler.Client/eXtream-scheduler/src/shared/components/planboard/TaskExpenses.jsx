@@ -127,7 +127,7 @@ export function TaskExpenses({ opened, onClose, taskId, userId, organizationId, 
                 {expenses.map((expense, index) => (
                   <tr key={index}>
                     <td>
-                      <Badge color="blue" variant="light">
+                      <Badge color="brand" variant="light">
                         {expense.type}
                       </Badge>
                     </td>
